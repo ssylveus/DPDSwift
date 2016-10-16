@@ -10,7 +10,7 @@ import UIKit
 
 typealias CompletionBlock =  (response: AnyObject?, responseHeader: [NSObject: AnyObject]?, error: NSError?) -> Void
 
-class DPDHelper: NSObject {
+public class DPDHelper: NSObject {
 
     static let sharedHelper = DPDHelper()
     

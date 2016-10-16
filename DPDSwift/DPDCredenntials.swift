@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DPDCredenntials: NSObject {
+public class DPDCredenntials: NSObject {
 
     var accessToken: String?
     var installationId: String?

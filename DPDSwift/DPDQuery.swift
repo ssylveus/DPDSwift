@@ -9,7 +9,7 @@
 import UIKit
 import ObjectMapper
 
-class DPDQuery: NSObject {
+public class DPDQuery: NSObject {
 
     typealias QueryCompletionBlock = (response: [AnyObject], error: NSError?) -> Void
 

@@ -9,7 +9,7 @@
 import UIKit
 import ObjectMapper
 
-class DPDObject: Mappable {
+public class DPDObject: Mappable {
 
     var objectId: String?
     var createdAt: NSNumber?

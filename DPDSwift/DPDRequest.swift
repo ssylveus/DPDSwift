@@ -26,7 +26,7 @@ let accessTokenHeaderFieldKey = "accessToken"
 let sessionTokenKey = "SessionToken"
 
 
-class DPDRequest: NSObject {
+public class DPDRequest: NSObject {
 
     static let sharedHelper = DPDRequest()
     static var refreshTokenOperation: BackendOperation!

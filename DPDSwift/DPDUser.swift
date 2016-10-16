@@ -9,7 +9,7 @@
 import UIKit
 import ObjectMapper
 
-class DPDUser: DPDObject {
+public class DPDUser: DPDObject {
 
     static let SharedUser = DPDUser()
     var username: String?
