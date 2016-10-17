@@ -225,12 +225,8 @@ public class DPDRequest: NSObject {
             refreshTokenOperation = refreshOperation
         }
         
-        for backendOperation: BackendOperation in (operationQueue.operations as? [BackendOperation])! {
-            backendOperation.addDependency(refreshOperation);
-        }
-        
+        saveExpiredAccessTokenOperations()
         operationQueue.addOperation(refreshOperation)
-        operationQueue.maxConcurrentOperationCount = 1
     }
     
     class func saveExpiredAccessTokenOperations() {
