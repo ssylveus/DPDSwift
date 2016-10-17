@@ -17,8 +17,8 @@ public enum HTTPMethod: String {
 
 public enum ErrorCodes: Int {
     case UnAuthorizedUser = 401
-    case ExistingSession = 402
-    case ExpiredAccessToken = 405
+    case ExistingSession = 432
+    case ExpiredAccessToken = 433
 }
 
 
@@ -30,9 +30,10 @@ public class DPDRequest: NSObject {
 
     static let sharedHelper = DPDRequest()
     static var refreshTokenOperation: BackendOperation!
+    static var expiredAccessTokenOperations: [BackendOperation] = [BackendOperation]()
+    static var isRefreshTokenRefreshing = false
     static let operationQueue: NSOperationQueue = {
         var queue = NSOperationQueue()
-        queue.maxConcurrentOperationCount = 1
         return queue
     }()
     
@@ -100,23 +101,25 @@ public class DPDRequest: NSObject {
     
     class func urlSessionFromRequest(request: NSMutableURLRequest, compBlock: CompletionBlock) {
         
-        let requestOperation = BackendOperation(session: NSURLSession.sharedSession(), request: request) { (data, response, error) -> Void in
+        let refreshOperation = BackendOperation(session: NSURLSession.sharedSession(), request: request) { (data, response, error) -> Void in
             
             if let httpResponse = response as? NSHTTPURLResponse {
                 switch httpResponse.statusCode {
                 case ErrorCodes.ExpiredAccessToken.rawValue:
-                    refreshAccessToken((request.URL?.absoluteString)!, compBlock: { (response, responseHeader, error) -> Void in
-                        if(error == nil) {
-                            if let credential = DPDCredenntials.sharedCredentials.accessToken {
-                                request.setValue(credential, forHTTPHeaderField: accessTokenHeaderFieldKey)
+                    if !isRefreshTokenRefreshing {
+                        refreshAccessToken((request.URL?.absoluteString)!, compBlock: { (response, responseHeader, error) -> Void in
+                            if(error == nil) {
+                                if let credential = DPDCredenntials.sharedCredentials.accessToken {
+                                    request.setValue(credential, forHTTPHeaderField: accessTokenHeaderFieldKey)
+                                }
+                                urlSessionFromRequest(request, compBlock: { (response, responseHeader, error) -> Void in
+                                    urlSessionFromRequest(request, compBlock: compBlock)
+                                })
+                            } else {
+                                compBlock(response: response, responseHeader: nil, error: error)
                             }
-                            urlSessionFromRequest(request, compBlock: { (response, responseHeader, error) -> Void in
-                                urlSessionFromRequest(request, compBlock: compBlock)
-                            })
-                        } else {
-                            compBlock(response: response, responseHeader: nil, error: error)
-                        }
-                    })
+                        })
+                    }
                     break
                     
                 default:
@@ -128,11 +131,12 @@ public class DPDRequest: NSObject {
             }
         }
         
-        if requestOperation != refreshTokenOperation && refreshTokenOperation != nil {
-            requestOperation.addDependency(refreshTokenOperation)
+        if refreshTokenOperation == nil || refreshTokenOperation.finished {
+            refreshTokenOperation = refreshOperation
         }
-        operationQueue.maxConcurrentOperationCount = 1
-        operationQueue.addOperation(requestOperation)
+        
+        saveExpiredAccessTokenOperations()
+        operationQueue.addOperation(refreshOperation)
     }
     
     class func processJsonResponse(data: NSData?, response: NSURLResponse?, error: NSError?, compBlock: CompletionBlock) {
@@ -154,7 +158,7 @@ public class DPDRequest: NSObject {
                             message = errorMessage
                         }
                         
-                        let error = NSError(domain: message as! String, code: httpResponse.statusCode, userInfo: nil)
+                        let error = NSError(domain: message, code: httpResponse.statusCode, userInfo: nil)
                         compBlock(response: jsonData, responseHeader: nil, error: error)
                         return
                     }
@@ -168,7 +172,9 @@ public class DPDRequest: NSObject {
     }
     
     class func refreshAccessToken(forAPI: String, compBlock: CompletionBlock) {
-        
+        print("***************** Refreshing Access Token ********************")
+        isRefreshTokenRefreshing = true
+
         var urlString = sharedHelper.rootUrl + "refreshaccesstoken";
         print(urlString);
         urlString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
@@ -201,7 +207,8 @@ public class DPDRequest: NSObject {
                                 DPDCredenntials.sharedCredentials.accessToken = accessToken
                                 DPDCredenntials.sharedCredentials.save()
                             }
-                            
+                            isRefreshTokenRefreshing = false
+                            self.restartBackendOperations()
                             compBlock(response: jsonData, responseHeader: nil, error: error)
                         }
                     } else {
@@ -224,5 +231,19 @@ public class DPDRequest: NSObject {
         
         operationQueue.addOperation(refreshOperation)
         operationQueue.maxConcurrentOperationCount = 1
+    }
+    
+    class func saveExpiredAccessTokenOperations() {
+        for backendOperation: BackendOperation in (operationQueue.operations as? [BackendOperation])! {
+            expiredAccessTokenOperations.append(backendOperation)
+        }
+    }
+    
+    class func restartBackendOperations() {
+        for backendOperation: BackendOperation in expiredAccessTokenOperations {4
+            backendOperation.start()
+        }
+        
+        expiredAccessTokenOperations.removeAll()
     }
 }
