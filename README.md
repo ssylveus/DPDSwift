@@ -84,5 +84,93 @@ class ViewController: UIViewController {
         }
     }
  }
+ 
+ func getStores() {
+        let query = DPDQuery(queryCondition: DPDQuery.QueryCondition.None,
+                             ordertype: DPDQuery.OrderType.Ascending,
+                             limit: nil,
+                             skip: nil,
+                             queryField: nil,
+                             queryFieldValue: nil,
+                             sortField: nil)
+        
+        query.findMappableObject(Store(), rootUrl: rootUrl, endPoint: "store") { (response, error) in
+            if error == nil {
+                if let stores = response as? [Store] {
+                    for store in stores {
+                        print(store.toJSON())
+                        print("\n\n")
+                    }
+                }
+            } else {
+                print(error)
+            }
+        }
+ }
+    
 ```  
 # Using DPDUser
+
+-SubClassing DPDUser 
+
+```swift
+import UIKit
+import DPDSwift
+import ObjectMapper
+
+class User: DPDUser {
+    var firstName: String?
+    var lastName: String?
+    var fullName: String?
+    var age: NSNumber?
+    
+    required init() {
+        super.init()
+    }
+    
+    required init?(_ map: Map) {
+        super.init(map)
+    }
+    
+    override func mapping(map: Map) {
+        super.mapping(map)
+        
+        firstName <- map["firstName"]
+        lastName <- map["lastName"]
+        fullName <- map["fullName"]
+        age <- map["age"]
+    }
+}
+
+//========================== Creating a User Collection ===============================
+func createUser() {
+        DPDUser.createUser(User(), rootUrl: rootUrl, username: "dpdswift@gmail.com", password: "dpdswift") { (response, responseHeader, error) in
+            if error == nil {
+                if let users = response as? [User] {
+                    print(users[0].toJSON())
+                }
+            } else {
+                print(error)
+            }
+        }
+    }
+    
+func updateUser() {
+    if let user = DPDUser.currentUser(User()) {
+        user.firstName = "DPD"
+        user.lastName = "Swift"
+        user.fullName = user.firstName! + " " + user.lastName!
+        user.age = 28
+            
+        user.updateObjectInBackground(User(), rootUrl: rootUrl, endPoint: "users", compblock: { (response, responseHeader, error) in
+            if error == nil {
+                if let users = response as? [User] {
+                    print(users[0].toJSON())
+                }
+                } else {
+                    print(error)
+                }
+            })
+        }
+}
+```
