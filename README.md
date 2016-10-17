@@ -5,7 +5,7 @@ DPDSwift is an iOS library, that helps facilitate the use of Deployd for iOS Dev
 
 #Features
 - DPDObject
-- DPDUsers
+- DPDUser
 - DPDQuery
 - DPDRequest
 
