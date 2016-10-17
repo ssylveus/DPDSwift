@@ -8,14 +8,14 @@
 
 import UIKit
 
-enum HTTPMethod: String {
+public enum HTTPMethod: String {
     case GET = "GET"
     case POST = "POST"
     case DELETE = "DELETE"
     case PUT = "PUT"
 }
 
-enum ErrorCodes: Int {
+public enum ErrorCodes: Int {
     case UnAuthorizedUser = 401
     case ExistingSession = 402
     case ExpiredAccessToken = 405
@@ -40,7 +40,7 @@ public class DPDRequest: NSObject {
     
     static let API_TIME_OUT_PERIOD      = 30.0
     
-    class func requestWithURL(rootURL:String,
+    public class func requestWithURL(rootURL:String,
                               endPointURL: String?,
                               parameters: [String: AnyObject]?,
                               method: HTTPMethod,
@@ -149,7 +149,12 @@ public class DPDRequest: NSObject {
                         compBlock(response: jsonData!, responseHeader: httpResponse.allHeaderFields, error: error)
                         return
                     } else {
-                        let error = NSError(domain: "Unknown Error", code: httpResponse.statusCode, userInfo: nil)
+                        var message = ""
+                        if let data = jsonData as? [String: AnyObject], let errorMessage = data["message"] as? String {
+                            message = errorMessage
+                        }
+                        
+                        let error = NSError(domain: message as! String, code: httpResponse.statusCode, userInfo: nil)
                         compBlock(response: jsonData, responseHeader: nil, error: error)
                         return
                     }

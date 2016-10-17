@@ -11,9 +11,9 @@ import ObjectMapper
 
 public class DPDQuery: NSObject {
 
-    typealias QueryCompletionBlock = (response: [AnyObject], error: NSError?) -> Void
+    public typealias QueryCompletionBlock = (response: [AnyObject], error: NSError?) -> Void
 
-    enum QueryCondition: Int {
+    public enum QueryCondition: Int {
         case GreaterThan = 0
         case GreaterThanEqualTo = 1
         case LessThan = 2
@@ -25,7 +25,7 @@ public class DPDQuery: NSObject {
         case None = 8
     }
     
-    enum OrderType: Int {
+    public enum OrderType: Int {
         case Ascending = 1
         case Descending = -1
     }
@@ -40,12 +40,12 @@ public class DPDQuery: NSObject {
     private var queryParam: [String: AnyObject]? = nil
     private var callingThread: NSThread? = nil
     
-    class func findObject(rootUrl: String, objectId: String, endPoint: String, responseDataModel: DPDObject, compblock: QueryCompletionBlock) {
+    public class func findObject(rootUrl: String, objectId: String, endPoint: String, responseDataModel: DPDObject, compblock: QueryCompletionBlock) {
         let query = DPDQuery()
         query.makeApiRequest(rootUrl, endpointValue: endPoint + "/\(objectId)", compblock: compblock)
     }
     
-    override init() {
+    public override init() {
         queryCondition = .None
         sortingOrder = .Ascending
         limit = nil
@@ -55,7 +55,7 @@ public class DPDQuery: NSObject {
         sortField = nil
     }
     
-    init(queryCondition: QueryCondition?,
+    public init(queryCondition: QueryCondition?,
          ordertype: OrderType,
          limit: Int?,
          skip: Int?,
@@ -71,17 +71,17 @@ public class DPDQuery: NSObject {
         self.sortField = sortField
     }
     
-    func findObject(rootUrl: String, endPoint: String, compblock: QueryCompletionBlock) {
+    public func findObject(rootUrl: String, endPoint: String, compblock: QueryCompletionBlock) {
         processQueryInfo()
         makeApiRequest(rootUrl, endpointValue: endPoint, compblock: compblock)
     }
     
-    func findMappableObject<T: DPDObject>(mapper: Mapper<T>, rootUrl: String, endPoint: String, compblock: QueryCompletionBlock) {
+    public func findMappableObject<T: DPDObject>(mapper: T, rootUrl: String, endPoint: String, compblock: QueryCompletionBlock) {
         processQueryInfo()
         makeApiRequestForMappableObject(mapper, rootUrl: rootUrl, endpointValue: endPoint, compblock: compblock)
     }
     
-    private func makeApiRequestForMappableObject<T: DPDObject>(mapper: Mapper<T>, rootUrl: String, endpointValue: String, compblock: QueryCompletionBlock) {
+    private func makeApiRequestForMappableObject<T: DPDObject>(mapper: T, rootUrl: String, endpointValue: String, compblock: QueryCompletionBlock) {
         
         executeRequest(rootUrl, endpointValue: endpointValue) { (response, responseHeader, error) in
             if error == nil {
@@ -90,7 +90,7 @@ public class DPDQuery: NSObject {
                     mnObjects = DPDObject.convertToDPDObject(mapper, response: [responseDict])
                     
                 } else {
-                    mnObjects = DPDObject.convertToDPDObject(Mapper<T>(), response: response as! [[String: AnyObject]])
+                    mnObjects = DPDObject.convertToDPDObject(mapper, response: response as! [[String: AnyObject]])
                 }
                 
                 compblock(response: mnObjects, error: nil)

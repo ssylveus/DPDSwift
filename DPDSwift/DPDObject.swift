@@ -15,30 +15,30 @@ public class DPDObject: Mappable {
     var createdAt: NSNumber?
     var updatedAt: NSNumber?
     
-    required init() {
+    required public init() {
         
     }
     
-    required init?(_ map: Map) {
+    required public init?(_ map: Map) {
         
     }
     
-    func mapping(map: Map) {
+    public func mapping(map: Map) {
         objectId <- map["id"]
         createdAt <- map["createdAt"]
         updatedAt <- map["updatedAt"]
     }
     
-    func toJson() -> [String: AnyObject]? {
+    public func toJson() -> [String: AnyObject]? {
         return Mapper<DPDObject>().toJSON(self)
     }
     
-    func toJsonString() -> String? {
+    public func toJsonString() -> String? {
         return DPDHelper.toJsonString(Mapper<DPDObject>().toJSON(self))
     }
     
-    class func convertToDPDObject<T: DPDObject>(mapper: Mapper<T>, response: [[String: AnyObject]]) -> [T] {
-        if let responseArray = mapper.mapArray(response) {
+    public class func convertToDPDObject<T: DPDObject>(mapper: T, response: [[String: AnyObject]]) -> [T] {
+        if let responseArray = Mapper<T>().mapArray(response) {
             return responseArray
         }
         
@@ -47,7 +47,7 @@ public class DPDObject: Mappable {
     
     //MARK: - CRUD OPERATIONS   
     
-    func createObject<T: DPDObject>(mapper: Mapper<T>, rootUrl: String, endPoint: String, compblock: CompletionBlock) {
+    public func createObject<T: DPDObject>(mapper: T, rootUrl: String, endPoint: String, compblock: CompletionBlock) {
         let jsonString = toJsonString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint, parameters: nil, method: HTTPMethod.POST, jsonString: jsonString) { (response, responseHeader, error) -> Void in
@@ -66,7 +66,7 @@ public class DPDObject: Mappable {
         }
     }
     
-    func updateObjectInBackground<T: DPDObject>(mapper: Mapper<T>, rootUrl: String, endPoint: String, compblock: CompletionBlock) {
+    public func updateObjectInBackground<T: DPDObject>(mapper: T, rootUrl: String, endPoint: String, compblock: CompletionBlock) {
         let jsonString = toJsonString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint + "/\(self.objectId!)", parameters: nil, method: HTTPMethod.PUT, jsonString: jsonString) { (response, responseHeader, error) -> Void in
@@ -84,7 +84,7 @@ public class DPDObject: Mappable {
         }
     }
     
-    func deleteObjectInBackground(rootUrl: String, endPoint: String, objectId: String, param: [String: AnyObject]? = nil, compblock: CompletionBlock) {
+    public func deleteObjectInBackground(rootUrl: String, endPoint: String, objectId: String, param: [String: AnyObject]? = nil, compblock: CompletionBlock) {
         let jsonString = toJsonString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint + "/\(objectId)", parameters: param, method: HTTPMethod.DELETE, jsonString: jsonString) { (response, responseHeader, error) -> Void in

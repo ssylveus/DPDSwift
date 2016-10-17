@@ -19,13 +19,13 @@ public class DPDCredenntials: NSObject {
     override init() {
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required public init(coder aDecoder: NSCoder) {
         accessToken  = aDecoder.decodeObjectForKey("accessToken") as? String
         installationId  = aDecoder.decodeObjectForKey("installationId") as? String
         sessionId  = aDecoder.decodeObjectForKey("sessionId") as? String
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
+    public func encodeWithCoder(aCoder: NSCoder) {
         if let accessToken = self.accessToken{
             aCoder.encodeObject(accessToken, forKey: "accessToken")
         }
@@ -39,17 +39,17 @@ public class DPDCredenntials: NSObject {
         }
     }
     
-    func save() {
+    public func save() {
         let data = NSKeyedArchiver.archivedDataWithRootObject(self)
         NSUserDefaults.standardUserDefaults().setObject(data, forKey: "AppCredentials")
         NSUserDefaults.standardUserDefaults().synchronize()
     }
     
-    func clear() {
+    public func clear() {
         NSUserDefaults.standardUserDefaults().removeObjectForKey("AppCredentials")
     }
     
-    class func loadSaved() -> DPDCredenntials {
+    public class func loadSaved() -> DPDCredenntials {
         if let data = NSUserDefaults.standardUserDefaults().objectForKey("AppCredentials") as? NSData {
             if let credentials = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? DPDCredenntials {
                 return credentials
@@ -59,7 +59,7 @@ public class DPDCredenntials: NSObject {
         return DPDCredenntials()
     }
     
-    class func generateDeviceId() {
+    public class func generateDeviceId() {
         let uuid = NSUUID().UUIDString
         DPDCredenntials.sharedCredentials.installationId = uuid
         
