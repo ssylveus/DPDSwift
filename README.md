@@ -94,7 +94,7 @@ class ViewController: UIViewController {
                              queryFieldValue: nil,
                              sortField: nil)
         
-        query.findMappableObject(Store(), rootUrl: rootUrl, endPoint: "store") { (response, error) in
+        query.findMappableObject(Store(), rootUrl: rootUrl, endPoint: "stores") { (response, error) in
             if error == nil {
                 if let stores = response as? [Store] {
                     for store in stores {
