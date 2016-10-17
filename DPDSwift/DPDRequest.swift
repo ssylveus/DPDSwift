@@ -150,7 +150,7 @@ public class DPDRequest: NSObject {
                 }
                 if let httpResponse = response as? NSHTTPURLResponse {
                     if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 || httpResponse.statusCode == 201 {
-                        compBlock(response: jsonData!, responseHeader: httpResponse.allHeaderFields, error: error)
+                        compBlock(response: jsonData != nil ? jsonData! : [], responseHeader: httpResponse.allHeaderFields, error: error)
                         return
                     } else {
                         var message = ""
@@ -208,6 +208,7 @@ public class DPDRequest: NSObject {
                                 DPDCredenntials.sharedCredentials.save()
                             }
                             isRefreshTokenRefreshing = false
+                            refreshTokenOperation = nil
                             self.restartBackendOperations()
                             compBlock(response: jsonData, responseHeader: nil, error: error)
                         }
