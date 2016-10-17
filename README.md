@@ -79,7 +79,7 @@ class ViewController: UIViewController {
             if error == nil {
                 print("store updated successfully")
             } else {
-                print("failed to create store")
+                print("failed to update store")
             }
         }
     }
