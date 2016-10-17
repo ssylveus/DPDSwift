@@ -174,7 +174,7 @@ public class DPDUser: DPDObject {
             var sessionDict = [String: AnyObject]()
             sessionDict["sessionToken"] = "sid=\(token)"
             
-            guard let sessionId = DPDCredenntials.sharedCredentials.sessionId where sessionId.characters.count > 0  else {
+            guard let sessionId = DPDCredenntials.sharedCredentials.sessionId , sessionId.characters.count > 0  else {
                 return
             }
             
