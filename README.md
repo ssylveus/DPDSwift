@@ -86,7 +86,7 @@ class ViewController: UIViewController {
  }
  
  
- //========= If you want the response to be mapped to specific DPDObject, you can call the findMappableObject otherwise call the findObject ===============
+ //========= If you want the response to be mapped to specific DPDObject, you can call the findMappableObject() otherwise call the findObjec()t method ===============
  func getStores() {
         let query = DPDQuery(queryCondition: DPDQuery.QueryCondition.None,
                              ordertype: DPDQuery.OrderType.Ascending,
