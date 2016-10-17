@@ -174,3 +174,9 @@ func updateUser() {
         }
 }
 ```
+# Installation
+DPDSwift can be added to your project using [CocoaPods 0.36 or later](http://blog.cocoapods.org/Pod-Authors-Guide-to-CocoaPods-Frameworks/) by adding the following line to your `Podfile`:
+
+```ruby
+pod 'DPDSwift', :git => 'https://github.com/ssylveus/DPDSwift.git'
+```
