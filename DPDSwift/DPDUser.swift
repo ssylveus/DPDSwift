@@ -87,7 +87,7 @@ public class DPDUser: DPDObject {
         let jsonString = DPDHelper.toJsonString(userRequestObjt(username, password: password))
         
         var sessionDict = [String: AnyObject]()
-        sessionDict["installationId"] = DPDCredenntials.sharedCredentials.installationId
+        sessionDict["installationId"] = DPDCredentials.sharedCredentials.installationId
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.usersEndpoint + "/login", parameters: nil, method: HTTPMethod.POST, jsonString: jsonString, requestHeader : sessionDict) { (response, responseHeader, error) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -174,7 +174,7 @@ public class DPDUser: DPDObject {
             var sessionDict = [String: AnyObject]()
             sessionDict["sessionToken"] = "sid=\(token)"
             
-            guard let sessionId = DPDCredenntials.sharedCredentials.sessionId where sessionId.characters.count > 0  else {
+            guard let sessionId = DPDCredentials.sharedCredentials.sessionId where sessionId.characters.count > 0  else {
                 return
             }
             
@@ -188,7 +188,7 @@ public class DPDUser: DPDObject {
             }
         }
         
-        DPDCredenntials.sharedCredentials.clear()
+        DPDCredentials.sharedCredentials.clear()
     }
     
     public class func getAccessToken(rootUrl: String, compBlock: CompletionBlock) {
@@ -201,14 +201,14 @@ public class DPDUser: DPDObject {
                         self.saveUserObjToDefaults(users[0])
                         
                         if let accessToken = responseDict["accessToken"] as? String {
-                            DPDCredenntials.sharedCredentials.accessToken = accessToken
+                            DPDCredentials.sharedCredentials.accessToken = accessToken
                         }
                         
                         if let sessionId = responseDict["sessionId"] as? String {
-                            DPDCredenntials.sharedCredentials.sessionId = sessionId
+                            DPDCredentials.sharedCredentials.sessionId = sessionId
                         }
                         
-                        DPDCredenntials.sharedCredentials.save()
+                        DPDCredentials.sharedCredentials.save()
                         
                         compBlock(response: users, responseHeader: responseHeader, error: nil)
                     }

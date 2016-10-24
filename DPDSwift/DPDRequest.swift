@@ -8,14 +8,14 @@
 
 import UIKit
 
-public enum HTTPMethod: String {
+enum HTTPMethod: String {
     case GET = "GET"
     case POST = "POST"
     case DELETE = "DELETE"
     case PUT = "PUT"
 }
 
-public enum ErrorCodes: Int {
+enum ErrorCodes: Int {
     case UnAuthorizedUser = 401
     case ExistingSession = 432
     case ExpiredAccessToken = 433
@@ -26,8 +26,8 @@ let accessTokenHeaderFieldKey = "accessToken"
 let sessionTokenKey = "SessionToken"
 
 
-public class DPDRequest: NSObject {
-
+class DPDRequest: NSObject {
+    
     static let sharedHelper = DPDRequest()
     static var refreshTokenOperation: BackendOperation!
     static var expiredAccessTokenOperations: [BackendOperation] = [BackendOperation]()
@@ -41,7 +41,7 @@ public class DPDRequest: NSObject {
     
     static let API_TIME_OUT_PERIOD      = 30.0
     
-    public class func requestWithURL(rootURL:String,
+    class func requestWithURL(rootURL:String,
                               endPointURL: String?,
                               parameters: [String: AnyObject]?,
                               method: HTTPMethod,
@@ -74,7 +74,7 @@ public class DPDRequest: NSObject {
         request!.setValue("gzip", forHTTPHeaderField: "Accept-Encoding")
         request!.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        if let credential = DPDCredenntials.sharedCredentials.accessToken {
+        if let credential = DPDCredentials.sharedCredentials.accessToken {
             request?.setValue(credential, forHTTPHeaderField: accessTokenHeaderFieldKey)
         }
         
@@ -109,7 +109,7 @@ public class DPDRequest: NSObject {
                     if !isRefreshTokenRefreshing {
                         refreshAccessToken((request.URL?.absoluteString)!, compBlock: { (response, responseHeader, error) -> Void in
                             if(error == nil) {
-                                if let credential = DPDCredenntials.sharedCredentials.accessToken {
+                                if let credential = DPDCredentials.sharedCredentials.accessToken {
                                     request.setValue(credential, forHTTPHeaderField: accessTokenHeaderFieldKey)
                                 }
                                 urlSessionFromRequest(request, compBlock: { (response, responseHeader, error) -> Void in
@@ -174,7 +174,7 @@ public class DPDRequest: NSObject {
     class func refreshAccessToken(forAPI: String, compBlock: CompletionBlock) {
         print("***************** Refreshing Access Token ********************")
         isRefreshTokenRefreshing = true
-
+        
         var urlString = sharedHelper.rootUrl + "refreshaccesstoken";
         print(urlString);
         urlString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
@@ -204,8 +204,8 @@ public class DPDRequest: NSObject {
                     if httpResponse.statusCode == 200 {
                         if let response = jsonData as? [String: AnyObject] {
                             if let accessToken = response["accessToken"] as? String {
-                                DPDCredenntials.sharedCredentials.accessToken = accessToken
-                                DPDCredenntials.sharedCredentials.save()
+                                DPDCredentials.sharedCredentials.accessToken = accessToken
+                                DPDCredentials.sharedCredentials.save()
                             }
                             isRefreshTokenRefreshing = false
                             refreshTokenOperation = nil

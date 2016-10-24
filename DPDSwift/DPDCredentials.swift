@@ -8,24 +8,24 @@
 
 import UIKit
 
-public class DPDCredenntials: NSObject {
-
+class DPDCredentials: NSObject {
+    
     var accessToken: String?
     var installationId: String?
     var sessionId: String?
     
-    static let sharedCredentials = DPDCredenntials.loadSaved()
+    static let sharedCredentials = DPDCredentials.loadSaved()
     
     override init() {
     }
     
-    required public init(coder aDecoder: NSCoder) {
+    required init(coder aDecoder: NSCoder) {
         accessToken  = aDecoder.decodeObjectForKey("accessToken") as? String
         installationId  = aDecoder.decodeObjectForKey("installationId") as? String
         sessionId  = aDecoder.decodeObjectForKey("sessionId") as? String
     }
     
-    public func encodeWithCoder(aCoder: NSCoder) {
+    func encodeWithCoder(aCoder: NSCoder) {
         if let accessToken = self.accessToken{
             aCoder.encodeObject(accessToken, forKey: "accessToken")
         }
@@ -39,31 +39,31 @@ public class DPDCredenntials: NSObject {
         }
     }
     
-    public func save() {
+    func save() {
         let data = NSKeyedArchiver.archivedDataWithRootObject(self)
         NSUserDefaults.standardUserDefaults().setObject(data, forKey: "AppCredentials")
         NSUserDefaults.standardUserDefaults().synchronize()
     }
     
-    public func clear() {
+    func clear() {
         NSUserDefaults.standardUserDefaults().removeObjectForKey("AppCredentials")
     }
     
-    public class func loadSaved() -> DPDCredenntials {
+    class func loadSaved() -> DPDCredentials {
         if let data = NSUserDefaults.standardUserDefaults().objectForKey("AppCredentials") as? NSData {
-            if let credentials = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? DPDCredenntials {
+            if let credentials = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? DPDCredentials {
                 return credentials
             }
         }
         
-        return DPDCredenntials()
+        return DPDCredentials()
     }
     
-    public class func generateDeviceId() {
+    class func generateDeviceId() {
         let uuid = NSUUID().UUIDString
-        DPDCredenntials.sharedCredentials.installationId = uuid
+        DPDCredentials.sharedCredentials.installationId = uuid
         
-        DPDCredenntials.sharedCredentials.save()
+        DPDCredentials.sharedCredentials.save()
     }
-
+    
 }

@@ -6,9 +6,9 @@
 //  Copyright © 2016 Tayal, Rishabh. All rights reserved.
 //
 
-public class BackendOperation: NSOperation {
+class BackendOperation: NSOperation {
     
-    public typealias OperationCompBlock =  (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void
+    typealias OperationCompBlock =  (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void
     
     var task: NSURLSessionTask?
     var request: NSMutableURLRequest?
@@ -17,7 +17,7 @@ public class BackendOperation: NSOperation {
     
     
     private var _executing: Bool = false
-    override public var executing: Bool {
+    override var executing: Bool {
         get { return _executing }
         set {
             if _executing != newValue {
@@ -29,7 +29,7 @@ public class BackendOperation: NSOperation {
     }
     
     private var _finished: Bool = false;
-    override public var finished: Bool {
+    override  var finished: Bool {
         get {
             return _finished
         }
@@ -42,19 +42,19 @@ public class BackendOperation: NSOperation {
         }
     }
     
-    public override init () {
+    override init () {
         
     }
     
-    public init(session: NSURLSession, request: NSMutableURLRequest, completion: OperationCompBlock) {
+    init(session: NSURLSession, request: NSMutableURLRequest, completion: OperationCompBlock) {
         super.init()
         self.request = request
         self.session = session
         self.compBlock = completion
     }
     
-    override public func start() {
-        if let credential = DPDCredenntials.sharedCredentials.accessToken {
+    override  func start() {
+        if let credential = DPDCredentials.sharedCredentials.accessToken {
             request?.setValue(credential, forHTTPHeaderField: accessTokenHeaderFieldKey)
         }
         
@@ -67,7 +67,7 @@ public class BackendOperation: NSOperation {
         task!.resume()
     }
     
-    override public func cancel() {
+    override  func cancel() {
         super.cancel()
         task!.cancel()
     }

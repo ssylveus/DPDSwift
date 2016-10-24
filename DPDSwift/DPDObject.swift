@@ -66,7 +66,7 @@ public class DPDObject: Mappable {
         }
     }
     
-    public func updateObjectInBackground<T: DPDObject>(mapper: T, rootUrl: String, endPoint: String, compblock: CompletionBlock) {
+    public func updateObject<T: DPDObject>(mapper: T, rootUrl: String, endPoint: String, compblock: CompletionBlock) {
         let jsonString = toJsonString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint + "/\(self.objectId!)", parameters: nil, method: HTTPMethod.PUT, jsonString: jsonString) { (response, responseHeader, error) -> Void in
@@ -84,7 +84,7 @@ public class DPDObject: Mappable {
         }
     }
     
-    public func deleteObjectInBackground(rootUrl: String, endPoint: String, objectId: String, param: [String: AnyObject]? = nil, compblock: CompletionBlock) {
+    public func deleteObject(rootUrl: String, endPoint: String, objectId: String, param: [String: AnyObject]? = nil, compblock: CompletionBlock) {
         let jsonString = toJsonString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint + "/\(objectId)", parameters: param, method: HTTPMethod.DELETE, jsonString: jsonString) { (response, responseHeader, error) -> Void in
