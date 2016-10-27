@@ -36,7 +36,7 @@ s.source = { :git => "https://github.com/ssylveus/DPDSwift.git", :tag => "#{s.ve
 
 # 7
 s.framework = "UIKit"
-s.dependency 'ObjectMapper', :git => 'https://github.com/Hearst-DD/ObjectMapper.git'
+s.dependency 'ObjectMapper'
 
 # 8
 
