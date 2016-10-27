@@ -1,3 +1,21 @@
-PODFILE CHECKSUM: 0bb102dc17221a73125d38074f5bfbc0d90c5c45
+PODS:
+  - ObjectMapper (2.2.0)
+
+DEPENDENCIES:
+  - ObjectMapper (from `https://github.com/Hearst-DD/ObjectMapper.git`)
+
+EXTERNAL SOURCES:
+  ObjectMapper:
+    :git: https://github.com/Hearst-DD/ObjectMapper.git
+
+CHECKOUT OPTIONS:
+  ObjectMapper:
+    :commit: b3f14b2b099e45916b1264227f86ec6b8cd4b129
+    :git: https://github.com/Hearst-DD/ObjectMapper.git
+
+SPEC CHECKSUMS:
+  ObjectMapper: 4060d739febae11ab0c6af8d786f98667c82e1bd
+
+PODFILE CHECKSUM: ca5fe65d8b2d7b3bb94c8ece5d2ade8b9ca05661
 
 COCOAPODS: 1.1.1
