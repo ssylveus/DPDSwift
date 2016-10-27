@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
 
 # 1
 s.platform = :ios
-s.ios.deployment_target = '10.0'
+s.ios.deployment_target = '8.0'
 s.name = "DPDSwift"
 s.summary = "DPDSwift is an iOS library, that helps facilitate the use of Deployd for iOS Development."
 s.requires_arc = true
@@ -12,7 +12,7 @@ s.pod_target_xcconfig = {
   }
   
 # 2
-s.version = "0.1.1"
+s.version = "1.1.0"
 
 # 3
 s.license = { :type => "MIT", :file => "LICENSE" }
