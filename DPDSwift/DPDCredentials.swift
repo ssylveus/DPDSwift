@@ -20,38 +20,38 @@ class DPDCredentials: NSObject {
     }
     
     required init(coder aDecoder: NSCoder) {
-        accessToken  = aDecoder.decodeObjectForKey("accessToken") as? String
-        installationId  = aDecoder.decodeObjectForKey("installationId") as? String
-        sessionId  = aDecoder.decodeObjectForKey("sessionId") as? String
+        accessToken  = aDecoder.decodeObject(forKey: "accessToken") as? String
+        installationId  = aDecoder.decodeObject(forKey: "installationId") as? String
+        sessionId  = aDecoder.decodeObject(forKey: "sessionId") as? String
     }
     
-    func encodeWithCoder(aCoder: NSCoder) {
+    func encodeWithCoder(_ aCoder: NSCoder) {
         if let accessToken = self.accessToken{
-            aCoder.encodeObject(accessToken, forKey: "accessToken")
+            aCoder.encode(accessToken, forKey: "accessToken")
         }
         
         if let instId = installationId {
-            aCoder.encodeObject(instId, forKey: "installationId")
+            aCoder.encode(instId, forKey: "installationId")
         }
         
         if let sessionId = self.sessionId{
-            aCoder.encodeObject(sessionId, forKey: "sessionId")
+            aCoder.encode(sessionId, forKey: "sessionId")
         }
     }
     
     func save() {
-        let data = NSKeyedArchiver.archivedDataWithRootObject(self)
-        NSUserDefaults.standardUserDefaults().setObject(data, forKey: "AppCredentials")
-        NSUserDefaults.standardUserDefaults().synchronize()
+        let data = NSKeyedArchiver.archivedData(withRootObject: self)
+        UserDefaults.standard.set(data, forKey: "AppCredentials")
+        UserDefaults.standard.synchronize()
     }
     
     func clear() {
-        NSUserDefaults.standardUserDefaults().removeObjectForKey("AppCredentials")
+        UserDefaults.standard.removeObject(forKey: "AppCredentials")
     }
     
     class func loadSaved() -> DPDCredentials {
-        if let data = NSUserDefaults.standardUserDefaults().objectForKey("AppCredentials") as? NSData {
-            if let credentials = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? DPDCredentials {
+        if let data = UserDefaults.standard.object(forKey: "AppCredentials") as? Data {
+            if let credentials = NSKeyedUnarchiver.unarchiveObject(with: data) as? DPDCredentials {
                 return credentials
             }
         }
@@ -60,7 +60,7 @@ class DPDCredentials: NSObject {
     }
     
     class func generateDeviceId() {
-        let uuid = NSUUID().UUIDString
+        let uuid = UUID().uuidString
         DPDCredentials.sharedCredentials.installationId = uuid
         
         DPDCredentials.sharedCredentials.save()

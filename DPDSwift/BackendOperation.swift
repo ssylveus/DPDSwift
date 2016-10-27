@@ -6,38 +6,38 @@
 //  Copyright © 2016 Tayal, Rishabh. All rights reserved.
 //
 
-class BackendOperation: NSOperation {
+class BackendOperation: Operation {
     
-    typealias OperationCompBlock =  (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void
+    typealias OperationCompBlock =  (_ data: Data?, _ response: URLResponse?, _ error: Error?) -> Void
     
-    var task: NSURLSessionTask?
-    var request: NSMutableURLRequest?
-    var session: NSURLSession?
+    var task: URLSessionDataTask?
+    var request: URLRequest?
+    var session: URLSession?
     var compBlock: OperationCompBlock?
     
     
-    private var _executing: Bool = false
-    override var executing: Bool {
+    fileprivate var _executing: Bool = false
+    override var isExecuting: Bool {
         get { return _executing }
         set {
             if _executing != newValue {
-                willChangeValueForKey("isExecuting")
+                willChangeValue(forKey: "isExecuting")
                 _executing = newValue
-                didChangeValueForKey("isExecuting")
+                didChangeValue(forKey: "isExecuting")
             }
         }
     }
     
-    private var _finished: Bool = false;
-    override  var finished: Bool {
+    fileprivate var _finished: Bool = false;
+    override  var isFinished: Bool {
         get {
             return _finished
         }
         set {
             if _finished != newValue {
-                willChangeValueForKey("isFinished")
+                willChangeValue(forKey: "isFinished")
                 _finished = newValue
-                didChangeValueForKey("isFinished")
+                didChangeValue(forKey: "isFinished")
             }
         }
     }
@@ -46,7 +46,7 @@ class BackendOperation: NSOperation {
         
     }
     
-    init(session: NSURLSession, request: NSMutableURLRequest, completion: OperationCompBlock) {
+    init(session: URLSession, request: URLRequest, completion: @escaping OperationCompBlock) {
         super.init()
         self.request = request
         self.session = session
@@ -57,11 +57,12 @@ class BackendOperation: NSOperation {
         if let credential = DPDCredentials.sharedCredentials.accessToken {
             request?.setValue(credential, forHTTPHeaderField: accessTokenHeaderFieldKey)
         }
-        
-        self.task = self.session!.dataTaskWithRequest(self.request!, completionHandler: { (d: NSData?, r: NSURLResponse?, e: NSError?) -> Void in
-            self.compBlock!(data: d, response: r, error: e)
-            self.executing = false
-            self.finished = true
+        self.task = self.session!.dataTask(with: self.request!, completionHandler: { (data, response, error) in
+            
+            self.compBlock!(data, response, error)
+            self.isExecuting = false
+            self.isFinished = true
+
         })
         
         task!.resume()

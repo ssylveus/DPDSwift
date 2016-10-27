@@ -1,12 +1,12 @@
 //
-//  ISO8601DateTransform.swift
+//  TransformOf.swift
 //  ObjectMapper
 //
-//  Created by Jean-Pierre Mouilleseaux on 21 Nov 2014.
+//  Created by Tristan Himmelman on 8/22/16.
 //
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2014-2015 Hearst
+//  Copyright (c) 2014-2016 Hearst
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -28,14 +28,24 @@
 
 import Foundation
 
-public class ISO8601DateTransform: DateFormatterTransform {
+open class NSDecimalNumberTransform: TransformType {
+    public typealias Object = NSDecimalNumber
+    public typealias JSON = String
 
-	public init() {
-		let formatter = NSDateFormatter()
-		formatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
-		formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-		
-		super.init(dateFormatter: formatter)
-	}
-	
+    public init() {}
+
+    open func transformFromJSON(_ value: Any?) -> NSDecimalNumber? {
+        if let string = value as? String {
+            return NSDecimalNumber(string: string)
+        }
+        if let double = value as? Double {
+            return NSDecimalNumber(value: double)
+        }
+        return nil
+    }
+
+    open func transformToJSON(_ value: NSDecimalNumber?) -> String? {
+        guard let value = value else { return nil }
+        return value.description
+    }
 }
