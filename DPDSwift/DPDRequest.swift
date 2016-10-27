@@ -16,9 +16,9 @@ enum HTTPMethod: String {
 }
 
 enum ErrorCodes: Int {
-    case UnAuthorizedUser = 401
-    case ExistingSession = 432
-    case ExpiredAccessToken = 433
+    case unAuthorizedUser = 401
+    case existingSession = 432
+    case expiredAccessToken = 433
 }
 
 
@@ -32,8 +32,8 @@ class DPDRequest: NSObject {
     static var refreshTokenOperation: BackendOperation!
     static var expiredAccessTokenOperations: [BackendOperation] = [BackendOperation]()
     static var isRefreshTokenRefreshing = false
-    static let operationQueue: NSOperationQueue = {
-        var queue = NSOperationQueue()
+    static let operationQueue: OperationQueue = {
+        var queue = OperationQueue()
         return queue
     }()
     
@@ -41,14 +41,14 @@ class DPDRequest: NSObject {
     
     static let API_TIME_OUT_PERIOD      = 30.0
     
-    class func requestWithURL(rootURL:String,
+    class func requestWithURL(_ rootURL:String,
                               endPointURL: String?,
                               parameters: [String: AnyObject]?,
                               method: HTTPMethod,
                               jsonString: String?,
                               cacheResponse: Bool? = false,
                               requestHeader: [String: AnyObject]? = nil,
-                              andCompletionBlock compBlock: CompletionBlock) {
+                              andCompletionBlock compBlock: @escaping CompletionBlock) {
         
         sharedHelper.rootUrl = rootURL
         var urlString = rootURL + endPointURL!
@@ -57,18 +57,18 @@ class DPDRequest: NSObject {
         }
         
         print(urlString)
-        urlString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
+        urlString = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
         
-        let url = (NSURL(string: urlString))
-        var request: NSMutableURLRequest?
+        let url = (URL(string: urlString))
+        var request: URLRequest?
         if cacheResponse == true {
             if DPDHelper.sharedHelper.networkReachable {
-                request = NSMutableURLRequest(URL: NSURL(string: urlString)!, cachePolicy: .ReturnCacheDataElseLoad, timeoutInterval: API_TIME_OUT_PERIOD)
+                request = URLRequest(url: URL(string: urlString)!, cachePolicy: .returnCacheDataElseLoad, timeoutInterval: API_TIME_OUT_PERIOD)
             } else {
-                request = NSMutableURLRequest(URL: NSURL(string: urlString)!, cachePolicy: .ReloadIgnoringLocalCacheData, timeoutInterval: API_TIME_OUT_PERIOD)
+                request = URLRequest(url: URL(string: urlString)!, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: API_TIME_OUT_PERIOD)
             }
         } else {
-            request = NSMutableURLRequest(URL: url!)
+            request = URLRequest(url: url!)
         }
         
         request!.setValue("gzip", forHTTPHeaderField: "Accept-Encoding")
@@ -88,35 +88,35 @@ class DPDRequest: NSObject {
             }
         }
         request!.timeoutInterval = API_TIME_OUT_PERIOD
-        request!.HTTPMethod = method.rawValue
+        request!.httpMethod = method.rawValue
         
         if let string = jsonString {
-            let postData = NSMutableData(data: string.dataUsingEncoding(NSUTF8StringEncoding)!)
-            request!.HTTPBody = postData
+            let postData = NSData(data: string.data(using: String.Encoding.utf8)!) as Data
+            request!.httpBody = postData
         }
         
         print(request?.allHTTPHeaderFields);
         urlSessionFromRequest(request!, compBlock: compBlock)
     }
     
-    class func urlSessionFromRequest(request: NSMutableURLRequest, compBlock: CompletionBlock) {
-        
-        let refreshOperation = BackendOperation(session: NSURLSession.sharedSession(), request: request) { (data, response, error) -> Void in
+    class func urlSessionFromRequest(_ request: URLRequest, compBlock: @escaping CompletionBlock) {
+        var req = request
+        let refreshOperation = BackendOperation(session: URLSession.shared, request: request) { (data, response, error) -> Void in
             
-            if let httpResponse = response as? NSHTTPURLResponse {
+            if let httpResponse = response as? HTTPURLResponse {
                 switch httpResponse.statusCode {
-                case ErrorCodes.ExpiredAccessToken.rawValue:
+                case ErrorCodes.expiredAccessToken.rawValue:
                     if !isRefreshTokenRefreshing {
-                        refreshAccessToken((request.URL?.absoluteString)!, compBlock: { (response, responseHeader, error) -> Void in
+                        refreshAccessToken((request.url?.absoluteString)!, compBlock: { (response, responseHeader, error) -> Void in
                             if(error == nil) {
                                 if let credential = DPDCredentials.sharedCredentials.accessToken {
-                                    request.setValue(credential, forHTTPHeaderField: accessTokenHeaderFieldKey)
+                                    req.setValue(credential, forHTTPHeaderField: accessTokenHeaderFieldKey)
                                 }
                                 urlSessionFromRequest(request, compBlock: { (response, responseHeader, error) -> Void in
                                     urlSessionFromRequest(request, compBlock: compBlock)
                                 })
                             } else {
-                                compBlock(response: response, responseHeader: nil, error: error)
+                                compBlock(response, nil, error)
                             }
                         })
                     }
@@ -131,7 +131,7 @@ class DPDRequest: NSObject {
             }
         }
         
-        if refreshTokenOperation == nil || refreshTokenOperation.finished {
+        if refreshTokenOperation == nil || refreshTokenOperation.isFinished {
             refreshTokenOperation = refreshOperation
         }
         
@@ -139,18 +139,22 @@ class DPDRequest: NSObject {
         operationQueue.addOperation(refreshOperation)
     }
     
-    class func processJsonResponse(data: NSData?, response: NSURLResponse?, error: NSError?, compBlock: CompletionBlock) {
+    class func processJsonResponse(_ data: Data?, response: URLResponse?, error: Error?, compBlock: CompletionBlock) {
         if error != nil {
-            compBlock(response: response, responseHeader: nil, error: error)
+            compBlock(response, nil, error)
         } else {
             if error == nil {
-                var jsonData: AnyObject? = nil
-                if let data = data {
-                    jsonData = try? NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+                var jsonData: Any? = nil
+                
+                do {
+                    jsonData = try JSONSerialization.jsonObject(with: data!, options: .allowFragments)
+                } catch {
+                    
                 }
-                if let httpResponse = response as? NSHTTPURLResponse {
+                
+                if let httpResponse = response as? HTTPURLResponse {
                     if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 || httpResponse.statusCode == 201 {
-                        compBlock(response: jsonData != nil ? jsonData! : [], responseHeader: httpResponse.allHeaderFields, error: error)
+                        compBlock(jsonData != nil ? jsonData! : [], httpResponse.allHeaderFields, error)
                         return
                     } else {
                         var message = ""
@@ -159,30 +163,30 @@ class DPDRequest: NSObject {
                         }
                         
                         let error = NSError(domain: message, code: httpResponse.statusCode, userInfo: nil)
-                        compBlock(response: jsonData, responseHeader: nil, error: error)
+                        compBlock(jsonData, nil, error)
                         return
                     }
                 }
                 
             } else {
-                compBlock(response: response!, responseHeader: nil, error: error)
+                compBlock(response!, nil, error)
                 return
             }
         }
     }
     
-    class func refreshAccessToken(forAPI: String, compBlock: CompletionBlock) {
+    class func refreshAccessToken(_ forAPI: String, compBlock: @escaping CompletionBlock) {
         print("***************** Refreshing Access Token ********************")
         isRefreshTokenRefreshing = true
         
         var urlString = sharedHelper.rootUrl + "refreshaccesstoken";
         print(urlString);
-        urlString = urlString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLQueryAllowedCharacterSet())!
-        let url = (NSURL(string: urlString))
+        urlString = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
+        let url = (URL(string: urlString))
         
-        let request = NSMutableURLRequest(URL: url!)
+        var request = URLRequest(url: url!)
         request.timeoutInterval = API_TIME_OUT_PERIOD
-        request.HTTPMethod = HTTPMethod.GET.rawValue
+        request.httpMethod = HTTPMethod.GET.rawValue
         
         request.setValue("gzip", forHTTPHeaderField: "Accept-Encoding")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -192,15 +196,27 @@ class DPDRequest: NSObject {
             request.setValue("sid=\(token)", forHTTPHeaderField: "cookie")
         }
         
-        let refreshOperation = BackendOperation(session: NSURLSession.sharedSession(), request: request) { (data, response, error) -> Void in
+        let refreshOperation = BackendOperation(session: URLSession.shared, request: request) { (data, response, error) -> Void in
             
-            var jsonData: AnyObject? = nil
+            var jsonData: Any? = nil
+            
+            do {
+                jsonData = try JSONSerialization.jsonObject(with: data!, options: .allowFragments)
+            } catch {
+                
+            }
+            
             if let data = data {
-                jsonData = try? NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+                do {
+                   jsonData = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                } catch {
+                    compBlock (nil, nil, error)
+                    return
+                }
             }
             
             if error == nil {
-                if let httpResponse = response as? NSHTTPURLResponse {
+                if let httpResponse = response as? HTTPURLResponse {
                     if httpResponse.statusCode == 200 {
                         if let response = jsonData as? [String: AnyObject] {
                             if let accessToken = response["accessToken"] as? String {
@@ -210,11 +226,11 @@ class DPDRequest: NSObject {
                             isRefreshTokenRefreshing = false
                             refreshTokenOperation = nil
                             self.restartBackendOperations()
-                            compBlock(response: jsonData, responseHeader: nil, error: error)
+                            compBlock(jsonData, nil, error)
                         }
                     } else {
                         let error = NSError(domain: "Unknown Error", code: httpResponse.statusCode, userInfo: nil)
-                        compBlock(response: jsonData, responseHeader: nil, error: error)
+                        compBlock(jsonData, nil, error)
                         return
                     }
                 }
@@ -222,7 +238,7 @@ class DPDRequest: NSObject {
             
         }
         
-        if refreshTokenOperation == nil || refreshTokenOperation.finished {
+        if refreshTokenOperation == nil || refreshTokenOperation.isFinished {
             refreshTokenOperation = refreshOperation
         }
         
