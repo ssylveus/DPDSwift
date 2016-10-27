@@ -253,7 +253,7 @@ class DPDRequest: NSObject {
     }
     
     class func restartBackendOperations() {
-        for backendOperation: BackendOperation in expiredAccessTokenOperations {4
+        for backendOperation: BackendOperation in expiredAccessTokenOperations {
             backendOperation.start()
         }
         
