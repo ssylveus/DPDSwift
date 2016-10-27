@@ -8,7 +8,7 @@ s.summary = "DPDSwift is an iOS library, that helps facilitate the use of Deploy
 s.requires_arc = true
 
 # 2
-s.version = "0.1.0"
+s.version = "0.1.1"
 
 # 3
 s.license = { :type => "MIT", :file => "LICENSE" }
@@ -36,7 +36,7 @@ s.source = { :git => "https://github.com/ssylveus/DPDSwift.git", :tag => "#{s.ve
 
 # 7
 s.framework = "UIKit"
-s.dependency 'ObjectMapper', '= 1.3.0'
+s.dependency 'ObjectMapper', '~> 2.2'
 
 # 8
 
