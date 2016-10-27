@@ -8,7 +8,7 @@
 
 import UIKit
 
-public typealias CompletionBlock =  (response: AnyObject?, responseHeader: [NSObject: AnyObject]?, error: NSError?) -> Void
+public typealias CompletionBlock =  (_ response: Any?, _ responseHeader: [AnyHashable: Any]?, _ error: Error?) -> Void
 
 class DPDHelper: NSObject {
     
@@ -17,40 +17,40 @@ class DPDHelper: NSObject {
     var networkReachable: Bool = true
     
     
-    class func toJsonString(data: AnyObject, prettyPrinted:Bool = false) -> String? {
-        let options = prettyPrinted ? NSJSONWritingOptions.PrettyPrinted : NSJSONWritingOptions(rawValue: 0)
-        guard let jsonData: NSData = try? NSJSONSerialization.dataWithJSONObject(data, options: options) else {
+    class func toJsonString(_ data: Any, prettyPrinted:Bool = false) -> String? {
+        let options = prettyPrinted ? JSONSerialization.WritingOptions.prettyPrinted : JSONSerialization.WritingOptions(rawValue: 0)
+        guard let jsonData: Data = try? JSONSerialization.data(withJSONObject: data, options: options) else {
             return nil
         }
-        let jsonString: String? = String.init(data: jsonData, encoding: NSUTF8StringEncoding)
+        let jsonString: String? = String.init(data: jsonData, encoding: String.Encoding.utf8)
         return jsonString
     }
     
-    class func writeArrayWithCustomObjToUserDefaults(key: String, array: [[String: AnyObject]]) {
-        let defaults = NSUserDefaults.standardUserDefaults()
-        let data = NSKeyedArchiver.archivedDataWithRootObject(array)
-        defaults.setObject(data, forKey: key)
+    class func writeArrayWithCustomObjToUserDefaults(_ key: String, array: [[String: Any]]) {
+        let defaults = UserDefaults.standard
+        let data = NSKeyedArchiver.archivedData(withRootObject: array)
+        defaults.set(data, forKey: key)
         defaults.synchronize()
     }
     
-    class func readArrayWithCustomObjFromUserDefault(key: String) -> [[String: AnyObject]]? {
-        let defaults = NSUserDefaults.standardUserDefaults()
-        if let data = defaults.objectForKey(key) as? NSData {
-            if let dataArray = NSKeyedUnarchiver.unarchiveObjectWithData(data) as? [[String: AnyObject]] {
+    class func readArrayWithCustomObjFromUserDefault(_ key: String) -> [[String: AnyObject]]? {
+        let defaults = UserDefaults.standard
+        if let data = defaults.object(forKey: key) as? Data {
+            if let dataArray = NSKeyedUnarchiver.unarchiveObject(with: data) as? [[String: AnyObject]] {
                 return dataArray
             }
         }
         return nil
     }
     
-    class func saveToUserDefault(key: String, value: AnyObject) {
-        let defaults = NSUserDefaults.standardUserDefaults()
-        defaults.setObject(value, forKey: key)
+    class func saveToUserDefault(_ key: String, value: AnyObject) {
+        let defaults = UserDefaults.standard
+        defaults.set(value, forKey: key)
         defaults.synchronize()
     }
     
-    class func retrieveFromUserDefault(key: String) -> AnyObject? {
-        let defaults = NSUserDefaults.standardUserDefaults()
-        return defaults.objectForKey(key)
+    class func retrieveFromUserDefault(_ key: String) -> AnyObject? {
+        let defaults = UserDefaults.standard
+        return defaults.object(forKey: key) as AnyObject?
     }
 }

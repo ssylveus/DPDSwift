@@ -9,7 +9,7 @@
 import UIKit
 import ObjectMapper
 
-public class DPDObject: Mappable {
+open class DPDObject: Mappable {
 
     var objectId: String?
     var createdAt: NSNumber?
@@ -19,26 +19,26 @@ public class DPDObject: Mappable {
         
     }
     
-    required public init?(_ map: Map) {
+    required public init?(map: Map) {
         
     }
     
-    public func mapping(map: Map) {
+    open func mapping(map: Map) {
         objectId <- map["id"]
         createdAt <- map["createdAt"]
         updatedAt <- map["updatedAt"]
     }
     
-    public func toJson() -> [String: AnyObject]? {
+    open func toJson() -> [String: Any]? {
         return Mapper<DPDObject>().toJSON(self)
     }
     
-    public func toJsonString() -> String? {
+    open func toJsonString() -> String? {
         return DPDHelper.toJsonString(Mapper<DPDObject>().toJSON(self))
     }
     
-    public class func convertToDPDObject<T: DPDObject>(mapper: T, response: [[String: AnyObject]]) -> [T] {
-        if let responseArray = Mapper<T>().mapArray(response) {
+    open class func convertToDPDObject<T: DPDObject>(_ mapper: T, response: [[String: Any]]) -> [T] {
+        if let responseArray = Mapper<T>().mapArray(JSONArray: response) {
             return responseArray
         }
         
@@ -47,53 +47,53 @@ public class DPDObject: Mappable {
     
     //MARK: - CRUD OPERATIONS   
     
-    public func createObject<T: DPDObject>(mapper: T, rootUrl: String, endPoint: String, compblock: CompletionBlock) {
+    open func createObject<T: DPDObject>(_ mapper: T, rootUrl: String, endPoint: String, compblock: @escaping CompletionBlock) {
         let jsonString = toJsonString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint, parameters: nil, method: HTTPMethod.POST, jsonString: jsonString) { (response, responseHeader, error) -> Void in
             print(response)
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
                         let mnObjects = DPDObject.convertToDPDObject(mapper, response: [responseDict])
-                        compblock(response: mnObjects, responseHeader: responseHeader, error: nil)
+                        compblock(mnObjects, responseHeader, nil)
                     }
                 } else {
-                    compblock(response: [], responseHeader: responseHeader, error: error)
+                    compblock([], responseHeader, error)
                 }
             })
             
         }
     }
     
-    public func updateObject<T: DPDObject>(mapper: T, rootUrl: String, endPoint: String, compblock: CompletionBlock) {
+    open func updateObject<T: DPDObject>(_ mapper: T, rootUrl: String, endPoint: String, compblock: @escaping CompletionBlock) {
         let jsonString = toJsonString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint + "/\(self.objectId!)", parameters: nil, method: HTTPMethod.PUT, jsonString: jsonString) { (response, responseHeader, error) -> Void in
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
                         let mnObjects = DPDObject.convertToDPDObject(mapper, response: [responseDict])
-                        compblock(response: mnObjects, responseHeader: responseHeader, error: nil)
+                        compblock(mnObjects, responseHeader, nil)
                     }
                 } else {
-                    compblock(response: [], responseHeader: responseHeader, error: error)
+                    compblock([], responseHeader, error)
                 }
                 
             })
         }
     }
     
-    public func deleteObject(rootUrl: String, endPoint: String, objectId: String, param: [String: AnyObject]? = nil, compblock: CompletionBlock) {
+    open func deleteObject(_ rootUrl: String, endPoint: String, objectId: String, param: [String: AnyObject]? = nil, compblock: @escaping CompletionBlock) {
         let jsonString = toJsonString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint + "/\(objectId)", parameters: param, method: HTTPMethod.DELETE, jsonString: jsonString) { (response, responseHeader, error) -> Void in
             
             if error == nil {
                 print(response)
-                compblock(response: [["message": "Object deleted successfully"]], responseHeader: responseHeader, error: nil)
+                compblock([["message": "Object deleted successfully"]], responseHeader, nil)
             } else {
-                compblock(response: [], responseHeader: responseHeader, error: error)
+                compblock([], responseHeader, error)
             }
         }
         

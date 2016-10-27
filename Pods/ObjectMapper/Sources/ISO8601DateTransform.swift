@@ -1,12 +1,12 @@
 //
-//  TransformOf.swift
+//  ISO8601DateTransform.swift
 //  ObjectMapper
 //
-//  Created by Syo Ikeda on 1/23/15.
+//  Created by Jean-Pierre Mouilleseaux on 21 Nov 2014.
 //
 //  The MIT License (MIT)
 //
-//  Copyright (c) 2014-2015 Hearst
+//  Copyright (c) 2014-2016 Hearst
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
 //  of this software and associated documentation files (the "Software"), to deal
@@ -26,23 +26,16 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-public class TransformOf<ObjectType, JSONType>: TransformType {
-	public typealias Object = ObjectType
-	public typealias JSON = JSONType
+import Foundation
 
-	private let fromJSON: JSONType? -> ObjectType?
-	private let toJSON: ObjectType? -> JSONType?
+open class ISO8601DateTransform: DateFormatterTransform {
 
-	public init(fromJSON: JSONType? -> ObjectType?, toJSON: ObjectType? -> JSONType?) {
-		self.fromJSON = fromJSON
-		self.toJSON = toJSON
+	public init() {
+		let formatter = DateFormatter()
+		formatter.locale = Locale(identifier: "en_US_POSIX")
+		formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+		
+		super.init(dateFormatter: formatter)
 	}
-
-	public func transformFromJSON(value: AnyObject?) -> ObjectType? {
-		return fromJSON(value as? JSONType)
-	}
-
-	public func transformToJSON(value: ObjectType?) -> JSONType? {
-		return toJSON(value)
-	}
+	
 }
