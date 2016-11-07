@@ -98,7 +98,7 @@ open class DPDUser: DPDObject {
                             DPDHelper.saveToUserDefault(sessionTokenKey, value: sessionToken as AnyObject)
                             self.getAccessToken(rootUrl, compBlock: { (response, responseHeader, error) in
                                 if let completionBlock = compBlock {
-                                    completionBlock(responseDict, responseHeader, nil)
+                                    completionBlock(response, responseHeader, nil)
                                 }
                             })
                         } else {
