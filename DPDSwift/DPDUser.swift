@@ -12,8 +12,8 @@ import ObjectMapper
 open class DPDUser: DPDObject {
 
     static let SharedUser = DPDUser()
-    var username: String?
-    var email: String?
+    public var username: String?
+    public var email: String?
     let currentUserUserDefaultKey = "CurrentUser"
     let usersEndpoint = "users"
     let sessionEndpoint = "session"

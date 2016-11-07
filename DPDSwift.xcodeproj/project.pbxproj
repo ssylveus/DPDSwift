@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		64E73E318FEBEB3E311D6764 /* Pods_DPDSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC9BE8E3CECA662298809A4E /* Pods_DPDSwift.framework */; };
+		755344391DD02C9C00E6C863 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 755344381DD02C9C00E6C863 /* Info.plist */; };
 		75E9F6CD1DB417E3009DFBCE /* DPDSwift.h in Headers */ = {isa = PBXBuildFile; fileRef = 75E9F6CB1DB417E3009DFBCE /* DPDSwift.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		75E9F6D91DB4181B009DFBCE /* BackendOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E9F6D31DB4181B009DFBCE /* BackendOperation.swift */; };
 		75E9F6DA1DB4181B009DFBCE /* DPDCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E9F6D41DB4181B009DFBCE /* DPDCredentials.swift */; };
@@ -20,9 +21,9 @@
 
 /* Begin PBXFileReference section */
 		518D3161CA961F6363D5E2CA /* Pods-DPDSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DPDSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-DPDSwift/Pods-DPDSwift.release.xcconfig"; sourceTree = "<group>"; };
+		755344381DD02C9C00E6C863 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		75E9F6C81DB417E3009DFBCE /* DPDSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DPDSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		75E9F6CB1DB417E3009DFBCE /* DPDSwift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DPDSwift.h; sourceTree = "<group>"; };
-		75E9F6CC1DB417E3009DFBCE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		75E9F6D31DB4181B009DFBCE /* BackendOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackendOperation.swift; sourceTree = "<group>"; };
 		75E9F6D41DB4181B009DFBCE /* DPDCredentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DPDCredentials.swift; sourceTree = "<group>"; };
 		75E9F6D51DB4181B009DFBCE /* DPDHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DPDHelper.swift; sourceTree = "<group>"; };
@@ -92,7 +93,7 @@
 				75E9F6D71DB4181B009DFBCE /* DPDQuery.swift */,
 				75E9F6D81DB4181B009DFBCE /* DPDRequest.swift */,
 				75E9F6DF1DB41827009DFBCE /* DPDUser.swift */,
-				75E9F6CC1DB417E3009DFBCE /* Info.plist */,
+				755344381DD02C9C00E6C863 /* Info.plist */,
 			);
 			path = DPDSwift;
 			sourceTree = "<group>";
@@ -171,6 +172,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				755344391DD02C9C00E6C863 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
