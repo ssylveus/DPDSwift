@@ -11,9 +11,9 @@ import ObjectMapper
 
 open class DPDObject: Mappable {
 
-    var objectId: String?
-    var createdAt: NSNumber?
-    var updatedAt: NSNumber?
+    public var objectId: String?
+    public var createdAt: NSNumber?
+    public var updatedAt: NSNumber?
     
     required public init() {
         

@@ -14,12 +14,12 @@ open class DPDUser: DPDObject {
     static let SharedUser = DPDUser()
     public var username: String?
     public var email: String?
-    let currentUserUserDefaultKey = "CurrentUser"
+    public let currentUserUserDefaultKey = "CurrentUser"
+    public var password: String?
+    
     let usersEndpoint = "users"
     let sessionEndpoint = "session"
     let accessTokenEndpoint = "accesstoken"
-    
-    fileprivate var password: String?
 
     required public init() {
         super.init()
