@@ -10,7 +10,7 @@ import UIKit
 
 public typealias CompletionBlock =  (_ response: Any?, _ responseHeader: [AnyHashable: Any]?, _ error: Error?) -> Void
 
-class DPDHelper: NSObject {
+public class DPDHelper: NSObject {
     
     static let sharedHelper = DPDHelper()
     
@@ -52,5 +52,13 @@ class DPDHelper: NSObject {
     class func retrieveFromUserDefault(_ key: String) -> AnyObject? {
         let defaults = UserDefaults.standard
         return defaults.object(forKey: key) as AnyObject?
+    }
+    
+    open class func getSessionId() -> String {
+        if let token = DPDHelper.retrieveFromUserDefault(sessionTokenKey) as? String {
+            return "sid=\(token)"
+        }
+        
+        return ""
     }
 }
