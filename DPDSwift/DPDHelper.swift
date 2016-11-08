@@ -61,4 +61,12 @@ public class DPDHelper: NSObject {
         
         return ""
     }
+    
+    open class func getAccessToken() -> String {
+        if let token = DPDCredentials.sharedCredentials.accessToken {
+            return token
+        }
+        
+        return ""
+    }
 }
