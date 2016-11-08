@@ -23,6 +23,7 @@ open class DPDQuery: NSObject {
         case contains = 6
         case regex = 7
         case none = 8
+        case or = 9
     }
     
     public enum OrderType: Int {
@@ -34,7 +35,7 @@ open class DPDQuery: NSObject {
     var sortingOrder: OrderType = .ascending
     var limit: Int? = nil
     var skip: Int? = nil
-    var queryField: String?
+    var queryField: NSObject?
     var queryFieldValue: NSObject?
     var sortField: String?
     fileprivate var queryParam: [String: AnyObject]? = nil
@@ -59,7 +60,7 @@ open class DPDQuery: NSObject {
          ordertype: OrderType,
          limit: Int?,
          skip: Int?,
-         queryField: String?,
+         queryField: NSObject?,
          queryFieldValue: NSObject?,
          sortField: String?) {
         self.queryCondition = queryCondition!
@@ -165,6 +166,8 @@ extension DPDQuery {
             queryParam?.addDictionary(dictionary: processingContainIn())
         case .regex:
             queryParam?.addDictionary(dictionary: processingRegex())
+        case.or:
+            queryParam?.addDictionary(dictionary: processingOr())
         default:
             queryParam?.addDictionary(dictionary: processingEqualTo())
         }
@@ -174,7 +177,7 @@ extension DPDQuery {
         var queryParam = [String: NSObject]()
         var valueDict = [String: NSObject]()
         valueDict["$gt"] = queryFieldValue
-        queryParam[queryField!] = valueDict as NSObject?
+        queryParam[queryField! as! String] = valueDict as NSObject?
         return queryParam
     }
     
@@ -182,7 +185,7 @@ extension DPDQuery {
         var queryParam = [String: NSObject]()
         var valueDict = [String: NSObject]()
         valueDict["$gte"] = queryFieldValue
-        queryParam[queryField!] = valueDict as NSObject?
+        queryParam[queryField! as! String] = valueDict as NSObject?
         return queryParam
     }
     
@@ -190,7 +193,7 @@ extension DPDQuery {
         var queryParam = [String: NSObject]()
         var valueDict = [String: NSObject]()
         valueDict["$lt"] = queryFieldValue
-        queryParam[queryField!] = valueDict as NSObject?
+        queryParam[queryField! as! String] = valueDict as NSObject?
         return queryParam
     }
     
@@ -198,7 +201,7 @@ extension DPDQuery {
         var queryParam = [String: NSObject]()
         var valueDict = [String: NSObject]()
         valueDict["$lte"] = queryFieldValue
-        queryParam[queryField!] = valueDict as NSObject?
+        queryParam[queryField! as! String] = valueDict as NSObject?
         return queryParam
     }
     
@@ -206,7 +209,7 @@ extension DPDQuery {
         var queryParam = [String: NSObject]()
         var valueDict = [String: NSObject]()
         valueDict["$ne"] = queryFieldValue
-        queryParam[queryField!] = valueDict as NSObject?
+        queryParam[queryField! as! String] = valueDict as NSObject?
         return queryParam
     }
     
@@ -214,7 +217,7 @@ extension DPDQuery {
         var queryParam = [String: NSObject]()
         var valueDict = [String: NSObject]()
         valueDict["$eq"] = queryFieldValue
-        queryParam[queryField!] = valueDict as NSObject?
+        queryParam[queryField! as! String] = valueDict as NSObject?
         return queryParam
     }
     
@@ -222,7 +225,7 @@ extension DPDQuery {
         var queryParam = [String: NSObject]()
         var valueDict = [String: NSObject]()
         valueDict["$in"] = queryFieldValue
-        queryParam[queryField!] = valueDict as NSObject?
+        queryParam[queryField! as! String] = valueDict as NSObject?
         return queryParam
     }
     
@@ -231,7 +234,7 @@ extension DPDQuery {
         var valueDict = [String: NSObject]()
         valueDict["$regex"] = queryFieldValue
         valueDict["$options"] = "i" as NSObject?
-        queryParam[queryField!] = valueDict as NSObject?
+        queryParam[queryField! as! String] = valueDict as NSObject?
         return queryParam
     }
     
@@ -243,6 +246,14 @@ extension DPDQuery {
         sortingParm["$sort"] = sortindDict as NSObject?
         return sortingParm
     }
+    
+    fileprivate func processingOr() -> [String: NSObject] {
+        var valueDict = [String: NSObject]()
+        valueDict["$or"] = queryFieldValue
+        return valueDict
+
+    }
+
     
     fileprivate func processingLimit() -> [String: NSObject] {
         var limitParm = [String: NSObject]()
