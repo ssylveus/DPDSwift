@@ -74,7 +74,7 @@ open class DPDUser: DPDObject {
                     if let responseDict = response as? [String: AnyObject] {
                         let users = DPDObject.convertToDPDObject(mapper, response: [responseDict])
                         self.saveUserObjToDefaults(users[0])
-                        self.login(rootUrl, username: username, password: password, compBlock: nil)
+                        self.login(mapper, rootUrl: rootUrl, username: username, password: password, compBlock: nil)
                         compBlock(users, responseHeader, nil)
                     }
                 } else {
@@ -84,7 +84,7 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func login(_ rootUrl: String, username: String, password: String, compBlock: CompletionBlock?) {
+    open class func login<T: DPDUser>(_ mapper: T, rootUrl: String, username: String, password: String, compBlock: CompletionBlock?) {
         let jsonString = DPDHelper.toJsonString(userRequestObjt(username, password: password))
         
         var sessionDict = [String: AnyObject]()
@@ -96,7 +96,7 @@ open class DPDUser: DPDObject {
                     if let responseDict = response as? [String: AnyObject] {
                         if let sessionToken = responseDict["id"] as? String {
                             DPDHelper.saveToUserDefault(sessionTokenKey, value: sessionToken as AnyObject)
-                            self.getAccessToken(rootUrl, compBlock: { (response, responseHeader, error) in
+                            self.getAccessToken(mapper, rootUrl: rootUrl, compBlock: { (response, responseHeader, error) in
                                 if let completionBlock = compBlock {
                                     completionBlock(response, responseHeader, nil)
                                 }
@@ -192,13 +192,13 @@ open class DPDUser: DPDObject {
         DPDCredentials.sharedCredentials.clear()
     }
     
-    open class func getAccessToken(_ rootUrl: String, compBlock: @escaping CompletionBlock) {
+    open class func getAccessToken<T: DPDUser>(_ mapper: T, rootUrl: String, compBlock: @escaping CompletionBlock) {
         DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.accessTokenEndpoint, parameters: nil, method: HTTPMethod.GET, jsonString: nil) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
                         let userDict = responseDict["user"] as? [String: AnyObject];
-                        let users = DPDObject.convertToDPDObject(DPDUser(), response: [userDict!])
+                        let users = DPDObject.convertToDPDObject(mapper, response: [userDict!])
                         self.saveUserObjToDefaults(users[0])
                         
                         if let accessToken = responseDict["accessToken"] as? String {
