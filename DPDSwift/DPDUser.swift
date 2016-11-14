@@ -191,6 +191,7 @@ open class DPDUser: DPDObject {
         
         DPDCredentials.sharedCredentials.clear()
         UserDefaults.standard.removeObject(forKey: SharedUser.currentUserUserDefaultKey)
+        UserDefaults.standard.synchronize()
     }
     
     open class func getAccessToken<T: DPDUser>(_ mapper: T, rootUrl: String, compBlock: @escaping CompletionBlock) {
