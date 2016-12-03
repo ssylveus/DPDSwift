@@ -30,7 +30,6 @@ class DPDRequest: NSObject {
     
     static let sharedHelper = DPDRequest()
     static var refreshTokenOperation: BackendOperation!
-    static var expiredAccessTokenOperations: [BackendOperation] = [BackendOperation]()
     static var isRefreshTokenRefreshing = false
     static let operationQueue: OperationQueue = {
         var queue = OperationQueue()
@@ -135,7 +134,6 @@ class DPDRequest: NSObject {
             refreshTokenOperation = refreshOperation
         }
         
-        saveExpiredAccessTokenOperations()
         operationQueue.addOperation(refreshOperation)
     }
     
@@ -225,7 +223,6 @@ class DPDRequest: NSObject {
                             }
                             isRefreshTokenRefreshing = false
                             refreshTokenOperation = nil
-                            self.restartBackendOperations()
                             compBlock(jsonData, nil, error)
                         }
                     } else {
@@ -242,21 +239,7 @@ class DPDRequest: NSObject {
             refreshTokenOperation = refreshOperation
         }
         
-        saveExpiredAccessTokenOperations()
         operationQueue.addOperation(refreshOperation)
     }
     
-    class func saveExpiredAccessTokenOperations() {
-        for backendOperation: BackendOperation in (operationQueue.operations as? [BackendOperation])! {
-            expiredAccessTokenOperations.append(backendOperation)
-        }
-    }
-    
-    class func restartBackendOperations() {
-        for backendOperation: BackendOperation in expiredAccessTokenOperations {
-            backendOperation.start()
-        }
-        
-        expiredAccessTokenOperations.removeAll()
-    }
 }
