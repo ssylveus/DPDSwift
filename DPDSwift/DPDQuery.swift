@@ -24,6 +24,7 @@ open class DPDQuery: NSObject {
         case regex = 7
         case none = 8
         case or = 9
+        case and = 10
     }
     
     public enum OrderType: Int {
@@ -168,6 +169,8 @@ extension DPDQuery {
             queryParam?.addDictionary(dictionary: processingRegex())
         case.or:
             queryParam?.addDictionary(dictionary: processingOr())
+        case.and:
+            queryParam?.addDictionary(dictionary: processingAnd())
         default:
             queryParam?.addDictionary(dictionary: processingEqualTo())
         }
@@ -252,6 +255,13 @@ extension DPDQuery {
         valueDict["$or"] = queryFieldValue
         return valueDict
 
+    }
+    
+    fileprivate func processingAnd() -> [String: NSObject] {
+        var valueDict = [String: NSObject]()
+        valueDict["$and"] = queryFieldValue
+        return valueDict
+        
     }
 
     
