@@ -12,8 +12,8 @@ import ObjectMapper
 open class DPDObject: Mappable {
 
     public var objectId: String?
-    public var createdAt: NSNumber?
-    public var updatedAt: NSNumber?
+    public var createdAt: TimeInterval?
+    public var updatedAt: TimeInterval?
     
     required public init() {
         
@@ -51,7 +51,7 @@ open class DPDObject: Mappable {
         let jsonString = toJsonString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint, parameters: nil, method: HTTPMethod.POST, jsonString: jsonString) { (response, responseHeader, error) -> Void in
-            print(response)
+            print(response ?? "")
             DispatchQueue.main.async(execute: {
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
@@ -90,7 +90,7 @@ open class DPDObject: Mappable {
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint + "/\(objectId)", parameters: param, method: HTTPMethod.DELETE, jsonString: jsonString) { (response, responseHeader, error) -> Void in
             
             if error == nil {
-                print(response)
+                print(response ?? "")
                 compblock([["message": "Object deleted successfully"]], responseHeader, nil)
             } else {
                 compblock([], responseHeader, error)

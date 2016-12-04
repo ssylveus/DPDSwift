@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		64E73E318FEBEB3E311D6764 /* Pods_DPDSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC9BE8E3CECA662298809A4E /* Pods_DPDSwift.framework */; };
-		755344391DD02C9C00E6C863 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 755344381DD02C9C00E6C863 /* Info.plist */; };
 		75E9F6CD1DB417E3009DFBCE /* DPDSwift.h in Headers */ = {isa = PBXBuildFile; fileRef = 75E9F6CB1DB417E3009DFBCE /* DPDSwift.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		75E9F6D91DB4181B009DFBCE /* BackendOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E9F6D31DB4181B009DFBCE /* BackendOperation.swift */; };
 		75E9F6DA1DB4181B009DFBCE /* DPDCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E9F6D41DB4181B009DFBCE /* DPDCredentials.swift */; };
@@ -140,7 +139,7 @@
 		75E9F6BF1DB417E3009DFBCE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = "Steeven Sylveus";
 				TargetAttributes = {
 					75E9F6C71DB417E3009DFBCE = {
@@ -172,7 +171,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				755344391DD02C9C00E6C863 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,6 +275,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -330,6 +329,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
