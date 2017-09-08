@@ -25,6 +25,7 @@ open class DPDQuery: NSObject {
         case none = 8
         case or = 9
         case and = 10
+        case generic =  11
     }
     
     public enum OrderType: Int {
@@ -171,6 +172,8 @@ extension DPDQuery {
             queryParam?.addDictionary(dictionary: processingOr())
         case.and:
             queryParam?.addDictionary(dictionary: processingAnd())
+        case .generic:
+            queryParam?.addDictionary(dictionary: queryFieldValue as! [String: AnyObject])
         default:
             queryParam?.addDictionary(dictionary: processingEqualTo())
         }
@@ -277,7 +280,6 @@ extension DPDQuery {
         skipParm["$skip"] = NSNumber(value: skip! as Int)
         return skipParm
     }
-
 }
 
 extension Dictionary {
