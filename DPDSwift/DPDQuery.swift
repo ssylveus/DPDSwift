@@ -173,7 +173,7 @@ extension DPDQuery {
         case.and:
             queryParam?.addDictionary(dictionary: processingAnd())
         case .generic:
-            queryParam?.addDictionary(dictionary: queryFieldValue as! [String: AnyObject])
+            queryParam?.addDictionary(dictionary: queryFieldValue as! Dictionary<String, AnyObject>)
         default:
             queryParam?.addDictionary(dictionary: processingEqualTo())
         }
