@@ -35,7 +35,7 @@ open class DPDUser: DPDObject {
     }
     
     open class func convertToObj<T: DPDUser>(_ mapper: Mapper<T>, jsonArray: [[String: Any]]) -> [T] {
-        return Mapper<T>().mapArray(JSONArray: jsonArray)!
+        return Mapper<T>().mapArray(JSONArray: jsonArray)
     }
     
     required public init?(map: Map) {

@@ -38,11 +38,7 @@ open class DPDObject: Mappable {
     }
     
     open class func convertToDPDObject<T: DPDObject>(_ mapper: T, response: [[String: Any]]) -> [T] {
-        if let responseArray = Mapper<T>().mapArray(JSONArray: response) {
-            return responseArray
-        }
-        
-        return []
+        return Mapper<T>().mapArray(JSONArray: response)
     }
     
     //MARK: - CRUD OPERATIONS   

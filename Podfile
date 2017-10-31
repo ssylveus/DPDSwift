@@ -13,7 +13,7 @@ target 'DPDSwift' do
       end
   end
   
-    pod 'ObjectMapper', :git => 'https://github.com/Hearst-DD/ObjectMapper.git'
-    #pod 'ObjectMapper', '~> 2.2'
+  pod 'ObjectMapper', '=2.2.8'
+  
 end
 
