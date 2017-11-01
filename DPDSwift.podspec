@@ -28,7 +28,7 @@ s.author = { "Steeven Sylveus" => "steevensylveus@gmail.com" }
 s.homepage = "https://github.com/ssylveus/DPDSwift"
 
 # 6 - Replace this URL with your own Git URL from "Quick Setup"
-s.source = { :git => "https://github.com/ssylveus/DPDSwift.git",:branch => "master", :tag => "s.version"}
+s.source = { :git => "https://github.com/ssylveus/DPDSwift.git",:branch => "master"}
 
 # 7
 s.framework = "UIKit"
