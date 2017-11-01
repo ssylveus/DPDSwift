@@ -32,7 +32,7 @@ s.source = { :git => "https://github.com/ssylveus/DPDSwift.git",:branch => "mast
 
 # 7
 s.framework = "UIKit"
-s.dependency 'ObjectMapper'
+s.dependency 'ObjectMapper', '=2.2.8'
 
 # 8
 s.source_files = "DPDSwift", "DPDSwift/**/*.{swift}"
