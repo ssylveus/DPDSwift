@@ -10,11 +10,11 @@ import UIKit
 
 open class DPDCredentials: NSObject {
     
-    var accessToken: String?
-    var installationId: String?
-    var sessionId: String?
+    public var accessToken: String?
+    public var installationId: String?
+    public var sessionId: String?
     
-    static let sharedCredentials = DPDCredentials.loadSaved()
+    public static let sharedCredentials = DPDCredentials.loadSaved()
     
     override init() {
     }
