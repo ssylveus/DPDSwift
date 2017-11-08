@@ -40,7 +40,7 @@ open class DPDQuery: NSObject {
     var queryField: NSObject?
     var queryFieldValue: NSObject?
     var sortField: String?
-    var queryParam: [String: AnyObject]? = nil
+    public var queryParam: [String: AnyObject]? = nil
     fileprivate var callingThread: Thread? = nil
     
     open class func findObject(_ rootUrl: String, objectId: String, endPoint: String, responseDataModel: DPDObject, compblock: @escaping QueryCompletionBlock) {
@@ -127,7 +127,7 @@ open class DPDQuery: NSObject {
         }
     }
     
-    func processQueryInfo() {
+    public func processQueryInfo() {
         queryParam = [String: AnyObject]()
         
         if queryField != nil && queryCondition != .none {
