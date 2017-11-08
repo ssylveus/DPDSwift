@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DPDCredentials: NSObject {
+open class DPDCredentials: NSObject {
     
     var accessToken: String?
     var installationId: String?
@@ -19,7 +19,7 @@ class DPDCredentials: NSObject {
     override init() {
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required public init(coder aDecoder: NSCoder) {
         accessToken  = aDecoder.decodeObject(forKey: "accessToken") as? String
         installationId  = aDecoder.decodeObject(forKey: "installationId") as? String
         sessionId  = aDecoder.decodeObject(forKey: "sessionId") as? String
