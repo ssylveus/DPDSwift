@@ -11,7 +11,8 @@ import ObjectMapper
 
 open class DPDQuery: NSObject {
 
-    public typealias QueryCompletionBlock = (_ response: [Any], _ error: Error?) -> Void
+    public typealias QueryCompletionBlock = (_ response: [[String: Any]], _ error: Error?) -> Void
+    public typealias QueryMappableCompletionBlock = (_ response: [Any], _ error: Error?) -> Void
 
     public enum QueryCondition: Int {
         case greaterThan = 0
@@ -79,12 +80,12 @@ open class DPDQuery: NSObject {
         makeApiRequest(rootUrl, endpointValue: endPoint, compblock: compblock)
     }
     
-    open func findMappableObject<T: DPDObject>(_ mapper: T, rootUrl: String, endPoint: String, compblock: @escaping QueryCompletionBlock) {
+    open func findMappableObject<T: DPDObject>(_ mapper: T, rootUrl: String, endPoint: String, compblock: @escaping QueryMappableCompletionBlock) {
         processQueryInfo()
         makeApiRequestForMappableObject(mapper, rootUrl: rootUrl, endpointValue: endPoint, compblock: compblock)
     }
     
-    fileprivate func makeApiRequestForMappableObject<T: DPDObject>(_ mapper: T, rootUrl: String, endpointValue: String, compblock: @escaping QueryCompletionBlock) {
+    fileprivate func makeApiRequestForMappableObject<T: DPDObject>(_ mapper: T, rootUrl: String, endpointValue: String, compblock: @escaping QueryMappableCompletionBlock) {
         
         executeRequest(rootUrl, endpointValue: endpointValue) { (response, responseHeader, error) in
             if error == nil {
@@ -108,9 +109,9 @@ open class DPDQuery: NSObject {
         executeRequest(rootUrl, endpointValue: endpointValue) { (response, responseHeader, error) in
             if error == nil {
                 if let responseDict = response as? [String: AnyObject] {
-                    compblock([responseDict as AnyObject], nil)
+                    compblock([responseDict], nil)
                 } else {
-                    compblock([response!], nil)
+                    compblock([response! as! Dictionary<String, Any>], nil)
                 }
             } else {
                 compblock([], error)
