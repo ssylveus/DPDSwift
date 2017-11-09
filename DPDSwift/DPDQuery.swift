@@ -111,7 +111,7 @@ open class DPDQuery: NSObject {
                 if let responseDict = response as? [String: AnyObject] {
                     compblock([responseDict], nil)
                 } else {
-                    compblock([response! as! Dictionary<String, Any>], nil)
+                    compblock(response! as![[String: Any]], nil)
                 }
             } else {
                 compblock([], error)
