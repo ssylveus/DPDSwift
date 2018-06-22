@@ -94,7 +94,7 @@ class DPDRequest: NSObject {
             request!.httpBody = postData
         }
         
-        print(request?.allHTTPHeaderFields);
+        print(request?.allHTTPHeaderFields ?? "");
         urlSessionFromRequest(request!, compBlock: compBlock)
     }
     

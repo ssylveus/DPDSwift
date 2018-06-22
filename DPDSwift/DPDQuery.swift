@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import ObjectMapper
 
 open class DPDQuery: NSObject {
 
