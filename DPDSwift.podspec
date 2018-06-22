@@ -7,9 +7,9 @@ s.name = "DPDSwift"
 s.summary = "DPDSwift is an iOS library, that helps facilitate the use of Deployd for iOS Development."
 s.requires_arc = true
 
-s.pod_target_xcconfig = {
-    'SWIFT_VERSION' => '4.0',
-  }
+#s.pod_target_xcconfig = {
+ #   'SWIFT_VERSION' => '4.0',
+  #}
   
 # 2
 s.version = "0.1.5"
