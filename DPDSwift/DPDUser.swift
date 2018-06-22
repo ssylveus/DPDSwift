@@ -7,48 +7,67 @@
 //
 
 import UIKit
-import ObjectMapper
 
 open class DPDUser: DPDObject {
 
     static let SharedUser = DPDUser()
+    
     var username: String?
     var email: String?
+    fileprivate var password: String?
+    
     let currentUserUserDefaultKey = "CurrentUser"
     let usersEndpoint = "users"
     let sessionEndpoint = "session"
     let accessTokenEndpoint = "accesstoken"
     
-    fileprivate var password: String?
-
-    required public init() {
+    private enum CodingKeys: String, CodingKey {
+        case username
+        case email
+        case password
+    }
+    
+    override init() {
         super.init()
+    }
+    
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.username = try container.decode(String.self, forKey: .username)
+        self.email = try container.decode(String.self, forKey: .email)
+        self.password = try container.decode(String.self, forKey: .password)
+        try super.init(from: decoder)
     }
     
     open class func currentUser<T: DPDUser>(_ mapper: T) -> T? {
         if let userArray = DPDHelper.readArrayWithCustomObjFromUserDefault(SharedUser.currentUserUserDefaultKey) {
-            let users = DPDUser.convertToObj(Mapper<T>(), jsonArray: userArray)
-            return users[0]
+            
+            guard let data = try? JSONSerialization.data(withJSONObject: userArray, options: []) else {
+                return nil
+            }
+            
+            do {
+                let users = try [T].decode(data: data)
+                return users[0]
+            } catch {
+                return nil
+            }
         }
         
         return nil
     }
     
-    open class func convertToObj<T: DPDUser>(_ mapper: Mapper<T>, jsonArray: [[String: Any]]) -> [T] {
-        return Mapper<T>().mapArray(JSONArray: jsonArray)!
-    }
-    
-    required public init?(map: Map) {
-        super.init(map: map)
-    }
-    
-    
-    override open func mapping(map: Map) {
-        super.mapping(map: map)
+    open class func convertToObj<T: DPDUser>(_ mapper: T, jsonArray: [[String: Any]]) -> [T] {
         
-        username <- map["username"]
-        password <- map["password"]
-        email <- map["email"]
+        guard let data = try? JSONSerialization.data(withJSONObject: jsonArray, options: []) else {
+            return []
+        }
+        
+        do {
+            return try [T].decode(data: data)
+        } catch {
+            return []
+        }
     }
     
     open class func userRequestObjt(_ username: String, password: String) -> [String: AnyObject] {
@@ -60,11 +79,13 @@ open class DPDUser: DPDObject {
     }
     
     open class func saveUserObjToDefaults<T: DPDUser>(_ user: T) {
-        let userDict = Mapper<T>().toJSON(user)
-        DPDHelper.writeArrayWithCustomObjToUserDefaults(SharedUser.currentUserUserDefaultKey, array: [userDict])
+        if let userDict = user.toJSON() as? [String: Any] {
+            DPDHelper.writeArrayWithCustomObjToUserDefaults(SharedUser.currentUserUserDefaultKey, array: [userDict])
+        }
+        
     }
     
-    open class func createUser<T: DPDUser>(_ mapper: T, rootUrl: String, username: String, password: String, compBlock: @escaping CompletionBlock) {
+    open class func createUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String, username: String, password: String, compBlock: @escaping CompletionBlock) {
         let jsonString = DPDHelper.toJsonString(userRequestObjt(username, password: password))
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.usersEndpoint, parameters: nil, method: HTTPMethod.POST, jsonString: jsonString) { (response, responseHeader, error) -> Void in
@@ -118,8 +139,8 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func updateUser<T: DPDUser>(_ mapper: T, rootUrl: String, user: DPDUser, compBlock: @escaping CompletionBlock) {
-        DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.usersEndpoint + "/\(user.objectId!)", parameters: nil, method: HTTPMethod.PUT, jsonString: user.toJsonString()) { (response, responseHeader, error) -> Void in
+    open class func updateUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String, user: DPDUser, compBlock: @escaping CompletionBlock) {
+        DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.usersEndpoint + "/\(user.objectId!)", parameters: nil, method: HTTPMethod.PUT, jsonString: user.toJSONString()) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
@@ -134,7 +155,7 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func getUser<T: DPDUser>(_ mapper: T, rootUrl: String, userId: String, compBlock: @escaping CompletionBlock) {
+    open class func getUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String, userId: String, compBlock: @escaping CompletionBlock) {
         DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.usersEndpoint + "/\(userId)", parameters: nil, method: HTTPMethod.GET, jsonString: nil) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
@@ -149,7 +170,7 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func refreshCurrentUser<T: DPDUser>(_ mapper: T, rootUrl: String, token: String, compBlock: @escaping CompletionBlock) {
+    open class func refreshCurrentUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String, token: String, compBlock: @escaping CompletionBlock) {
         var sessionDict = [String: AnyObject]()
         sessionDict["Cookie"] = "sid=\(token)" as AnyObject?
         
@@ -175,7 +196,7 @@ open class DPDUser: DPDObject {
             var sessionDict = [String: AnyObject]()
             sessionDict["sessionToken"] = "sid=\(token)" as AnyObject?
             
-            guard let sessionId = DPDCredentials.sharedCredentials.sessionId , sessionId.characters.count > 0  else {
+            guard let sessionId = DPDCredentials.sharedCredentials.sessionId , sessionId.count > 0  else {
                 return
             }
             
@@ -198,7 +219,7 @@ open class DPDUser: DPDObject {
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
                         let userDict = responseDict["user"] as? [String: AnyObject];
-                        let users = DPDObject.convertToDPDObject(DPDUser(), response: [userDict!])
+                        let users = DPDObject.convertToDPDObject(DPDUser.self, response: [userDict!])
                         self.saveUserObjToDefaults(users[0])
                         
                         if let accessToken = responseDict["accessToken"] as? String {
