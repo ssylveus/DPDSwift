@@ -20,9 +20,9 @@
 
 /* Begin PBXFileReference section */
 		518D3161CA961F6363D5E2CA /* Pods-DPDSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DPDSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-DPDSwift/Pods-DPDSwift.release.xcconfig"; sourceTree = "<group>"; };
-		755344381DD02C9C00E6C863 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		75E9F6C81DB417E3009DFBCE /* DPDSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DPDSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		75E9F6CB1DB417E3009DFBCE /* DPDSwift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DPDSwift.h; sourceTree = "<group>"; };
+		75E9F6CC1DB417E3009DFBCE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		75E9F6D31DB4181B009DFBCE /* BackendOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackendOperation.swift; sourceTree = "<group>"; };
 		75E9F6D41DB4181B009DFBCE /* DPDCredentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DPDCredentials.swift; sourceTree = "<group>"; };
 		75E9F6D51DB4181B009DFBCE /* DPDHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DPDHelper.swift; sourceTree = "<group>"; };
@@ -92,7 +92,7 @@
 				75E9F6D71DB4181B009DFBCE /* DPDQuery.swift */,
 				75E9F6D81DB4181B009DFBCE /* DPDRequest.swift */,
 				75E9F6DF1DB41827009DFBCE /* DPDUser.swift */,
-				755344381DD02C9C00E6C863 /* Info.plist */,
+				75E9F6CC1DB417E3009DFBCE /* Info.plist */,
 			);
 			path = DPDSwift;
 			sourceTree = "<group>";
@@ -121,8 +121,6 @@
 				75E9F6C41DB417E3009DFBCE /* Frameworks */,
 				75E9F6C51DB417E3009DFBCE /* Headers */,
 				75E9F6C61DB417E3009DFBCE /* Resources */,
-				54C8CF57EEE0A3A3327986B3 /* [CP] Copy Pods Resources */,
-				E8EE25BA3D9F6ABBA7B253FD /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -139,7 +137,7 @@
 		75E9F6BF1DB417E3009DFBCE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0810;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Steeven Sylveus";
 				TargetAttributes = {
 					75E9F6C71DB417E3009DFBCE = {
@@ -192,21 +190,6 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		54C8CF57EEE0A3A3327986B3 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DPDSwift/Pods-DPDSwift-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		C991C7DF4754E5FD545D52A5 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -223,21 +206,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E8EE25BA3D9F6ABBA7B253FD /* 📦 Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "📦 Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DPDSwift/Pods-DPDSwift-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -278,7 +246,6 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -332,7 +299,6 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -373,7 +339,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = DPDSwift/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ssylveus.dpd.DPDSwift;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -395,7 +361,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = DPDSwift/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ssylveus.dpd.DPDSwift;
 				PRODUCT_NAME = "$(TARGET_NAME)";

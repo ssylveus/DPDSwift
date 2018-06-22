@@ -11,8 +11,7 @@ import ObjectMapper
 
 open class DPDQuery: NSObject {
 
-    public typealias QueryCompletionBlock = (_ response: [[String: Any]], _ error: Error?) -> Void
-    public typealias QueryMappableCompletionBlock = (_ response: [Any], _ error: Error?) -> Void
+    public typealias QueryCompletionBlock = (_ response: [Any], _ error: Error?) -> Void
 
     public enum QueryCondition: Int {
         case greaterThan = 0
@@ -24,9 +23,6 @@ open class DPDQuery: NSObject {
         case contains = 6
         case regex = 7
         case none = 8
-        case or = 9
-        case and = 10
-        case generic =  11
     }
     
     public enum OrderType: Int {
@@ -38,10 +34,10 @@ open class DPDQuery: NSObject {
     var sortingOrder: OrderType = .ascending
     var limit: Int? = nil
     var skip: Int? = nil
-    var queryField: NSObject?
-    var queryFieldValue: NSObject?
+    var queryField: String?
+    var queryFieldValue: Any?
     var sortField: String?
-    public var queryParam: [String: AnyObject]? = nil
+    fileprivate var queryParam: [String: Any]? = nil
     fileprivate var callingThread: Thread? = nil
     
     open class func findObject(_ rootUrl: String, objectId: String, endPoint: String, responseDataModel: DPDObject, compblock: @escaping QueryCompletionBlock) {
@@ -59,14 +55,14 @@ open class DPDQuery: NSObject {
         sortField = nil
     }
     
-    public init(queryCondition: QueryCondition?,
+    public init(queryCondition: QueryCondition = .none,
          ordertype: OrderType,
          limit: Int?,
          skip: Int?,
-         queryField: NSObject?,
-         queryFieldValue: NSObject?,
+         queryField: String?,
+         queryFieldValue: Any?,
          sortField: String?) {
-        self.queryCondition = queryCondition!
+        self.queryCondition = queryCondition
         self.sortingOrder = ordertype
         self.limit = limit
         self.skip = skip
@@ -80,21 +76,21 @@ open class DPDQuery: NSObject {
         makeApiRequest(rootUrl, endpointValue: endPoint, compblock: compblock)
     }
     
-    open func findMappableObject<T: DPDObject>(_ mapper: T, rootUrl: String, endPoint: String, compblock: @escaping QueryMappableCompletionBlock) {
+    open func findMappableObject<T: DPDObject>(_ mapper: T.Type, rootUrl: String, endPoint: String, compblock: @escaping QueryCompletionBlock) {
         processQueryInfo()
         makeApiRequestForMappableObject(mapper, rootUrl: rootUrl, endpointValue: endPoint, compblock: compblock)
     }
     
-    fileprivate func makeApiRequestForMappableObject<T: DPDObject>(_ mapper: T, rootUrl: String, endpointValue: String, compblock: @escaping QueryMappableCompletionBlock) {
+    fileprivate func makeApiRequestForMappableObject<T: DPDObject>(_ mapper: T.Type, rootUrl: String, endpointValue: String, compblock: @escaping QueryCompletionBlock) {
         
         executeRequest(rootUrl, endpointValue: endpointValue) { (response, responseHeader, error) in
             if error == nil {
                 var mnObjects = [T]()
-                if let responseDict = response as? [String: AnyObject] {
+                if let responseDict = response as? [String: Any] {
                     mnObjects = DPDObject.convertToDPDObject(mapper, response: [responseDict])
                     
                 } else {
-                    mnObjects = DPDObject.convertToDPDObject(mapper, response: response as! [[String: AnyObject]])
+                    mnObjects = DPDObject.convertToDPDObject(mapper, response: response as! [[String: Any]])
                 }
                 
                 compblock(mnObjects, nil)
@@ -108,10 +104,10 @@ open class DPDQuery: NSObject {
     fileprivate func makeApiRequest(_ rootUrl: String, endpointValue: String, compblock: @escaping QueryCompletionBlock) {
         executeRequest(rootUrl, endpointValue: endpointValue) { (response, responseHeader, error) in
             if error == nil {
-                if let responseDict = response as? [String: AnyObject] {
-                    compblock([responseDict], nil)
+                if let responseDict = response as? [String: Any] {
+                    compblock([responseDict as Any], nil)
                 } else {
-                    compblock(response! as![[String: Any]], nil)
+                    compblock([response!], nil)
                 }
             } else {
                 compblock([], error)
@@ -128,8 +124,8 @@ open class DPDQuery: NSObject {
         }
     }
     
-    public func processQueryInfo() {
-        queryParam = [String: AnyObject]()
+    func processQueryInfo() {
+        queryParam = [String: Any]()
         
         if queryField != nil && queryCondition != .none {
             processQuerycondition()
@@ -169,118 +165,98 @@ extension DPDQuery {
             queryParam?.addDictionary(dictionary: processingContainIn())
         case .regex:
             queryParam?.addDictionary(dictionary: processingRegex())
-        case.or:
-            queryParam?.addDictionary(dictionary: processingOr())
-        case.and:
-            queryParam?.addDictionary(dictionary: processingAnd())
-        case .generic:
-            queryParam?.addDictionary(dictionary: queryFieldValue as! Dictionary<String, AnyObject>)
         default:
             queryParam?.addDictionary(dictionary: processingEqualTo())
         }
     }
     
-    fileprivate func processingGreaterThan() -> [String: NSObject] {
-        var queryParam = [String: NSObject]()
-        var valueDict = [String: NSObject]()
+    fileprivate func processingGreaterThan() -> [String: Any] {
+        var queryParam = [String: Any]()
+        var valueDict = [String: Any]()
         valueDict["$gt"] = queryFieldValue
-        queryParam[queryField! as! String] = valueDict as NSObject?
+        queryParam[queryField!] = valueDict
         return queryParam
     }
     
-    fileprivate func processingGreaterThanEqualTo() -> [String: NSObject] {
-        var queryParam = [String: NSObject]()
-        var valueDict = [String: NSObject]()
+    fileprivate func processingGreaterThanEqualTo() -> [String: Any] {
+        var queryParam = [String: Any]()
+        var valueDict = [String: Any]()
         valueDict["$gte"] = queryFieldValue
-        queryParam[queryField! as! String] = valueDict as NSObject?
+        queryParam[queryField!] = valueDict
         return queryParam
     }
     
-    fileprivate func processingLessThan() -> [String: NSObject] {
-        var queryParam = [String: NSObject]()
-        var valueDict = [String: NSObject]()
+    fileprivate func processingLessThan() -> [String: Any] {
+        var queryParam = [String: Any]()
+        var valueDict = [String: Any]()
         valueDict["$lt"] = queryFieldValue
-        queryParam[queryField! as! String] = valueDict as NSObject?
+        queryParam[queryField!] = valueDict
         return queryParam
     }
     
-    fileprivate func processingLessThanEqualTo() -> [String: NSObject] {
-        var queryParam = [String: NSObject]()
-        var valueDict = [String: NSObject]()
+    fileprivate func processingLessThanEqualTo() -> [String: Any] {
+        var queryParam = [String: Any]()
+        var valueDict = [String: Any]()
         valueDict["$lte"] = queryFieldValue
-        queryParam[queryField! as! String] = valueDict as NSObject?
+        queryParam[queryField!] = valueDict
         return queryParam
     }
     
-    fileprivate func processingNotEqualTo() -> [String: NSObject] {
-        var queryParam = [String: NSObject]()
-        var valueDict = [String: NSObject]()
+    fileprivate func processingNotEqualTo() -> [String: Any] {
+        var queryParam = [String: Any]()
+        var valueDict = [String: Any]()
         valueDict["$ne"] = queryFieldValue
-        queryParam[queryField! as! String] = valueDict as NSObject?
+        queryParam[queryField!] = valueDict
         return queryParam
     }
     
-    fileprivate func processingEqualTo() -> [String: NSObject] {
-        var queryParam = [String: NSObject]()
-        var valueDict = [String: NSObject]()
+    fileprivate func processingEqualTo() -> [String: Any] {
+        var queryParam = [String: Any]()
+        var valueDict = [String: Any]()
         valueDict["$eq"] = queryFieldValue
-        queryParam[queryField! as! String] = valueDict as NSObject?
+        queryParam[queryField!] = valueDict
         return queryParam
     }
     
-    fileprivate func processingContainIn() -> [String: NSObject] {
-        var queryParam = [String: NSObject]()
-        var valueDict = [String: NSObject]()
+    fileprivate func processingContainIn() -> [String: Any] {
+        var queryParam = [String: Any]()
+        var valueDict = [String: Any]()
         valueDict["$in"] = queryFieldValue
-        queryParam[queryField! as! String] = valueDict as NSObject?
+        queryParam[queryField!] = valueDict
         return queryParam
     }
     
-    fileprivate func processingRegex() -> [String: NSObject] {
-        var queryParam = [String: NSObject]()
-        var valueDict = [String: NSObject]()
+    fileprivate func processingRegex() -> [String: Any] {
+        var queryParam = [String: Any]()
+        var valueDict = [String: Any]()
         valueDict["$regex"] = queryFieldValue
-        valueDict["$options"] = "i" as NSObject?
-        queryParam[queryField! as! String] = valueDict as NSObject?
+        valueDict["$options"] = "i"
+        queryParam[queryField!] = valueDict
         return queryParam
     }
     
-    fileprivate func processingSortingOrder() -> [String: NSObject] {
-        var sortingParm = [String: NSObject]()
-        var sortindDict = [String: NSObject]()
+    fileprivate func processingSortingOrder() -> [String: Any] {
+        var sortingParm = [String: Any]()
+        var sortindDict = [String: Any]()
         sortindDict.updateValue(NSNumber(value: sortingOrder.rawValue as Int), forKey: sortField!)
         //sortindDict[sortField!] = NSNumber(integer: sortingOrder.rawValue)
-        sortingParm["$sort"] = sortindDict as NSObject?
+        sortingParm["$sort"] = sortindDict
         return sortingParm
     }
     
-    fileprivate func processingOr() -> [String: NSObject] {
-        var valueDict = [String: NSObject]()
-        valueDict["$or"] = queryFieldValue
-        return valueDict
-
-    }
-    
-    fileprivate func processingAnd() -> [String: NSObject] {
-        var valueDict = [String: NSObject]()
-        valueDict["$and"] = queryFieldValue
-        return valueDict
-        
-    }
-
-    
-    fileprivate func processingLimit() -> [String: NSObject] {
-        var limitParm = [String: NSObject]()
+    fileprivate func processingLimit() -> [String: Any] {
+        var limitParm = [String: Any]()
         limitParm["$limit"] = NSNumber(value: limit! as Int)
         
         return limitParm
     }
     
-    fileprivate func processingSkip() -> [String: NSObject] {
-        var skipParm = [String: NSObject]()
+    fileprivate func processingSkip() -> [String: Any] {
+        var skipParm = [String: Any]()
         skipParm["$skip"] = NSNumber(value: skip! as Int)
         return skipParm
     }
+
 }
 
 extension Dictionary {
