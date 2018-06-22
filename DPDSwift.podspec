@@ -8,7 +8,7 @@ s.summary = "DPDSwift is an iOS library, that helps facilitate the use of Deploy
 s.requires_arc = true
 
 s.pod_target_xcconfig = {
-    'SWIFT_VERSION' => '3.0',
+    'SWIFT_VERSION' => '4.0',
   }
   
 # 2
@@ -28,8 +28,7 @@ s.author = { "Steeven Sylveus" => "steevensylveus@gmail.com" }
 s.homepage = "https://github.com/ssylveus/DPDSwift"
 
 # 6 - Replace this URL with your own Git URL from "Quick Setup"
-s.source = { :git => "https://github.com/ssylveus/DPDSwift.git",:branch => "master", :tag =>
-'0.1.4'}
+s.source = { :git => "https://github.com/ssylveus/DPDSwift.git",:branch => "master"}
 
 # 7
 s.framework = "UIKit"
