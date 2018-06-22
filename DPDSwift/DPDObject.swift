@@ -7,51 +7,86 @@
 //
 
 import UIKit
-import ObjectMapper
 
-open class DPDObject: Mappable {
+extension Decodable {
+    static func decode(data: Data) throws -> Self {
+        let decoder = JSONDecoder()
+        return try decoder.decode(Self.self, from: data)
+    }
+}
+
+public extension Encodable {
+    func encode() throws -> Data {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        return try encoder.encode(self)
+    }
+    
+    func toJSON() -> Any? {
+        if let data = try? JSONEncoder().encode(self) {
+            do {
+                return try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+            } catch {
+                return nil
+            }
+        }
+        return nil
+    }
+    
+    func toJSONString() -> String? {
+        do {
+            let data =  try encode()
+            return String(data: data, encoding: .utf8)
+        } catch  {
+            return nil
+        }
+    }
+}
+
+open class DPDObject: NSObject, Codable {
 
     var objectId: String?
-    var createdAt: NSNumber?
-    var updatedAt: NSNumber?
+    var createdAt: TimeInterval?
+    var updatedAt: TimeInterval?
     
-    required public init() {
-        
+    private enum CodingKeys: String, CodingKey {
+        case objectId = "id"
+        case createdAt
+        case updatedAt
     }
     
-    required public init?(map: Map) {
-        
+    public override init() {
+        super.init()
     }
     
-    open func mapping(map: Map) {
-        objectId <- map["id"]
-        createdAt <- map["createdAt"]
-        updatedAt <- map["updatedAt"]
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.objectId = try container.decode(String.self, forKey: .objectId)
+        self.createdAt = try? container.decode(Double.self, forKey: .createdAt)
+        self.updatedAt = try? container.decode(Double.self, forKey: .updatedAt)
     }
     
-    open func toJson() -> [String: Any]? {
-        return Mapper<DPDObject>().toJSON(self)
-    }
-    
-    open func toJsonString() -> String? {
-        return DPDHelper.toJsonString(Mapper<DPDObject>().toJSON(self))
-    }
-    
-    open class func convertToDPDObject<T: DPDObject>(_ mapper: T, response: [[String: Any]]) -> [T] {
-        if let responseArray = Mapper<T>().mapArray(JSONArray: response) {
-            return responseArray
+    open class func convertToDPDObject<T: DPDObject>(_ mapper: T.Type, response: [[String: Any]]) -> [T] {
+        guard let data = try? JSONSerialization.data(withJSONObject: response, options: []) else {
+            return []
         }
         
-        return []
+        do {
+            
+            return try [T].decode(data: data)
+        } catch  {
+            return []
+        }
     }
     
     //MARK: - CRUD OPERATIONS   
     
-    open func createObject<T: DPDObject>(_ mapper: T, rootUrl: String, endPoint: String, compblock: @escaping CompletionBlock) {
-        let jsonString = toJsonString()
+    open func createObject<T:
+        DPDObject>(_ mapper: T.Type, rootUrl: String, endPoint: String, compblock: @escaping CompletionBlock) {
+        let jsonString = toJSONString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint, parameters: nil, method: HTTPMethod.POST, jsonString: jsonString) { (response, responseHeader, error) -> Void in
-            print(response)
+            print(response ?? "")
             DispatchQueue.main.async(execute: {
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
@@ -66,8 +101,8 @@ open class DPDObject: Mappable {
         }
     }
     
-    open func updateObject<T: DPDObject>(_ mapper: T, rootUrl: String, endPoint: String, compblock: @escaping CompletionBlock) {
-        let jsonString = toJsonString()
+    open func updateObject<T: DPDObject>(_ mapper: T.Type, rootUrl: String, endPoint: String, compblock: @escaping CompletionBlock) {
+        let jsonString = toJSONString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint + "/\(self.objectId!)", parameters: nil, method: HTTPMethod.PUT, jsonString: jsonString) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: {
@@ -85,12 +120,12 @@ open class DPDObject: Mappable {
     }
     
     open func deleteObject(_ rootUrl: String, endPoint: String, objectId: String, param: [String: AnyObject]? = nil, compblock: @escaping CompletionBlock) {
-        let jsonString = toJsonString()
+        let jsonString = toJSONString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint + "/\(objectId)", parameters: param, method: HTTPMethod.DELETE, jsonString: jsonString) { (response, responseHeader, error) -> Void in
             
             if error == nil {
-                print(response)
+                print(response ?? "")
                 compblock([["message": "Object deleted successfully"]], responseHeader, nil)
             } else {
                 compblock([], responseHeader, error)

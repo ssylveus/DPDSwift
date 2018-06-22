@@ -43,7 +43,7 @@ class DPDRequest: NSObject {
     
     class func requestWithURL(_ rootURL:String,
                               endPointURL: String?,
-                              parameters: [String: AnyObject]?,
+                              parameters: [String: Any]?,
                               method: HTTPMethod,
                               jsonString: String?,
                               cacheResponse: Bool? = false,
