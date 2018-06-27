@@ -61,7 +61,7 @@ open class DPDObject: NSObject, Codable {
     
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.objectId = try container.decode(String.self, forKey: .objectId)
+        self.objectId = try? container.decode(String.self, forKey: .objectId)
         self.createdAt = try? container.decode(Double.self, forKey: .createdAt)
         self.updatedAt = try? container.decode(Double.self, forKey: .updatedAt)
     }
