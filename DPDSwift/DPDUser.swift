@@ -39,7 +39,7 @@ open class DPDUser: DPDObject {
         try super.init(from: decoder)
     }
     
-    open class func currentUser<T: DPDUser>(_ mapper: T) -> T? {
+    open class func currentUser<T: DPDUser>(_ mapper: T.Type) -> T? {
         if let userArray = DPDHelper.readArrayWithCustomObjFromUserDefault(SharedUser.currentUserUserDefaultKey) {
             
             guard let data = try? JSONSerialization.data(withJSONObject: userArray, options: []) else {
@@ -57,7 +57,7 @@ open class DPDUser: DPDObject {
         return nil
     }
     
-    open class func convertToObj<T: DPDUser>(_ mapper: T, jsonArray: [[String: Any]]) -> [T] {
+    open class func convertToObj<T: DPDUser>(_ mapper: T.Type, jsonArray: [[String: Any]]) -> [T] {
         
         guard let data = try? JSONSerialization.data(withJSONObject: jsonArray, options: []) else {
             return []
