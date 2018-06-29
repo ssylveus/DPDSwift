@@ -45,9 +45,9 @@ public extension Encodable {
 
 open class DPDObject: NSObject, Codable {
 
-    var objectId: String?
-    var createdAt: TimeInterval?
-    var updatedAt: TimeInterval?
+    open var objectId: String?
+    open var createdAt: TimeInterval?
+    open var updatedAt: TimeInterval?
     
     private enum CodingKeys: String, CodingKey {
         case objectId = "id"
