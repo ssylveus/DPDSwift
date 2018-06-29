@@ -36,7 +36,7 @@ open class DPDCredentials: DPDObject {
         try super.init(from: decoder)
     }
     
-    override func encode(to encoder: Encoder) throws {
+    override open func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try? container.encode(accessToken, forKey: .accessToken)
         try? container.encode(installationId, forKey: .installationId)
