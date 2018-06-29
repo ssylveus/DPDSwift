@@ -8,51 +8,55 @@
 
 import UIKit
 
-open class DPDCredentials: NSObject {
+open class DPDCredentials: DPDObject {
     
     public var accessToken: String?
     public var installationId: String?
     public var sessionId: String?
     
+    fileprivate static let appCredentialKey = "AppCredentials"
+    
     public static let sharedCredentials = DPDCredentials.loadSaved()
     
+    private enum CodingKeys: String, CodingKey {
+        case accessToken
+        case installationId
+        case sessionId
+    }
+    
     override init() {
+        super.init()
     }
     
-    required public init(coder aDecoder: NSCoder) {
-        accessToken  = aDecoder.decodeObject(forKey: "accessToken") as? String
-        installationId  = aDecoder.decodeObject(forKey: "installationId") as? String
-        sessionId  = aDecoder.decodeObject(forKey: "sessionId") as? String
-    }
-    
-    func encodeWithCoder(_ aCoder: NSCoder) {
-        if let accessToken = self.accessToken{
-            aCoder.encode(accessToken, forKey: "accessToken")
-        }
-        
-        if let instId = installationId {
-            aCoder.encode(instId, forKey: "installationId")
-        }
-        
-        if let sessionId = self.sessionId{
-            aCoder.encode(sessionId, forKey: "sessionId")
-        }
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.accessToken = try? container.decode(String.self, forKey: .accessToken)
+        self.installationId = try? container.decode(String.self, forKey: .installationId)
+        self.sessionId = try? container.decode(String.self, forKey: .sessionId)
+        try super.init(from: decoder)
     }
     
     func save() {
-        let data = NSKeyedArchiver.archivedData(withRootObject: self)
-        UserDefaults.standard.set(data, forKey: "AppCredentials")
-        UserDefaults.standard.synchronize()
+        do {
+           let data = try encode()
+            UserDefaults.standard.set(data, forKey: DPDCredentials.appCredentialKey)
+            UserDefaults.standard.synchronize()
+        } catch  {
+            print("Unable to save credentials")
+        }
     }
     
     func clear() {
-        UserDefaults.standard.removeObject(forKey: "AppCredentials")
+        UserDefaults.standard.removeObject(forKey: DPDCredentials.appCredentialKey)
     }
     
     class func loadSaved() -> DPDCredentials {
-        if let data = UserDefaults.standard.object(forKey: "AppCredentials") as? Data {
-            if let credentials = NSKeyedUnarchiver.unarchiveObject(with: data) as? DPDCredentials {
+        if let data = UserDefaults.standard.object(forKey: DPDCredentials.appCredentialKey) as? Data {
+            do {
+                let credentials = try JSONDecoder().decode(DPDCredentials.self, from: data)
                 return credentials
+            } catch {
+                return DPDCredentials()
             }
         }
         
