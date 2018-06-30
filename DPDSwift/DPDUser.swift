@@ -9,7 +9,7 @@
 import UIKit
 
 open class DPDUser: DPDObject {
-
+    
     static let SharedUser = DPDUser()
     
     var username: String?
@@ -37,6 +37,13 @@ open class DPDUser: DPDObject {
         self.email = try? container.decode(String.self, forKey: .email)
         self.password = try? container.decode(String.self, forKey: .password)
         try super.init(from: decoder)
+    }
+    
+    override open func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try? container.encode(username, forKey: .username)
+        try? container.encode(email, forKey: .email)
+        try? super.encode(to: encoder)
     }
     
     open class func currentUser<T: DPDUser>(_ mapper: T.Type) -> T? {
@@ -95,7 +102,7 @@ open class DPDUser: DPDObject {
                     if let responseDict = response as? [String: AnyObject] {
                         let users = DPDObject.convertToDPDObject(mapper, response: [responseDict])
                         self.saveUserObjToDefaults(users[0])
-                        self.login(rootUrl, username: username, password: password, compBlock: nil)
+                        self.login(mapper, rootUrl: rootUrl, username: username, password: password, compBlock: nil)
                         compBlock(users, responseHeader, nil)
                     }
                 } else {
@@ -105,7 +112,7 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func login(_ rootUrl: String, username: String, password: String, compBlock: CompletionBlock?) {
+    open class func login<T: DPDUser>(_ mapper: T.Type, rootUrl: String, username: String, password: String, compBlock: CompletionBlock?) {
         let jsonString = DPDHelper.toJsonString(userRequestObjt(username, password: password))
         
         var sessionDict = [String: AnyObject]()
@@ -117,7 +124,7 @@ open class DPDUser: DPDObject {
                     if let responseDict = response as? [String: AnyObject] {
                         if let sessionToken = responseDict["id"] as? String {
                             DPDHelper.saveToUserDefault(sessionTokenKey, value: sessionToken as AnyObject)
-                            self.getAccessToken(rootUrl, compBlock: { (response, responseHeader, error) in
+                            self.getAccessToken(mapper, rootUrl: rootUrl, compBlock: { (response, responseHeader, error) in
                                 if let completionBlock = compBlock {
                                     completionBlock(responseDict, responseHeader, nil)
                                 }
@@ -213,13 +220,13 @@ open class DPDUser: DPDObject {
         DPDCredentials.sharedCredentials.clear()
     }
     
-    open class func getAccessToken(_ rootUrl: String, compBlock: @escaping CompletionBlock) {
+    open class func getAccessToken<T: DPDUser>(_ mapper: T.Type, rootUrl: String, compBlock: @escaping CompletionBlock) {
         DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.accessTokenEndpoint, parameters: nil, method: HTTPMethod.GET, jsonString: nil) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
                         let userDict = responseDict["user"] as? [String: AnyObject];
-                        let users = DPDObject.convertToDPDObject(DPDUser.self, response: [userDict!])
+                        let users = DPDObject.convertToDPDObject(mapper, response: [userDict!])
                         self.saveUserObjToDefaults(users[0])
                         
                         if let accessToken = responseDict["accessToken"] as? String {
@@ -241,3 +248,4 @@ open class DPDUser: DPDObject {
         }
     }
 }
+
