@@ -9,9 +9,9 @@
 import UIKit
 
 open class DPDQuery: NSObject {
-
+    
     public typealias QueryCompletionBlock = (_ response: [Any], _ error: Error?) -> Void
-
+    
     public enum QueryCondition: Int {
         case greaterThan = 0
         case greaterThanEqualTo = 1
@@ -22,6 +22,9 @@ open class DPDQuery: NSObject {
         case contains = 6
         case regex = 7
         case none = 8
+        case or = 9
+        case and = 10
+        case generic =  11
     }
     
     public enum OrderType: Int {
@@ -55,12 +58,12 @@ open class DPDQuery: NSObject {
     }
     
     public init(queryCondition: QueryCondition = .none,
-         ordertype: OrderType,
-         limit: Int?,
-         skip: Int?,
-         queryField: String?,
-         queryFieldValue: Any?,
-         sortField: String?) {
+                ordertype: OrderType,
+                limit: Int?,
+                skip: Int?,
+                queryField: String?,
+                queryFieldValue: Any?,
+                sortField: String?) {
         self.queryCondition = queryCondition
         self.sortingOrder = ordertype
         self.limit = limit
@@ -164,6 +167,12 @@ extension DPDQuery {
             queryParam?.addDictionary(dictionary: processingContainIn())
         case .regex:
             queryParam?.addDictionary(dictionary: processingRegex())
+        case.or:
+            queryParam?.addDictionary(dictionary: processingOr())
+        case.and:
+            queryParam?.addDictionary(dictionary: processingAnd())
+        case .generic:
+            queryParam?.addDictionary(dictionary: queryFieldValue as! Dictionary<String, AnyObject>)
         default:
             queryParam?.addDictionary(dictionary: processingEqualTo())
         }
@@ -243,6 +252,20 @@ extension DPDQuery {
         return sortingParm
     }
     
+    fileprivate func processingOr() -> [String: Any] {
+        var valueDict = [String: Any]()
+        valueDict["$or"] = queryFieldValue
+        return valueDict
+        
+    }
+    
+    fileprivate func processingAnd() -> [String: Any] {
+        var valueDict = [String: Any]()
+        valueDict["$and"] = queryFieldValue
+        return valueDict
+        
+    }
+    
     fileprivate func processingLimit() -> [String: Any] {
         var limitParm = [String: Any]()
         limitParm["$limit"] = NSNumber(value: limit! as Int)
@@ -255,7 +278,7 @@ extension DPDQuery {
         skipParm["$skip"] = NSNumber(value: skip! as Int)
         return skipParm
     }
-
+    
 }
 
 extension Dictionary {
@@ -266,3 +289,4 @@ extension Dictionary {
         }
     }
 }
+
