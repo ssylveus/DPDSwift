@@ -12,9 +12,8 @@ open class DPDUser: DPDObject {
     
     static let SharedUser = DPDUser()
     
-    var username: String?
-    var email: String?
-    var password: String?
+    public var username: String?
+    public var password: String?
     
     let currentUserUserDefaultKey = "CurrentUser"
     let usersEndpoint = "users"
@@ -23,7 +22,6 @@ open class DPDUser: DPDObject {
     
     private enum CodingKeys: String, CodingKey {
         case username
-        case email
         case password
     }
     
@@ -34,7 +32,6 @@ open class DPDUser: DPDObject {
     public required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.username = try? container.decode(String.self, forKey: .username)
-        self.email = try? container.decode(String.self, forKey: .email)
         self.password = try? container.decode(String.self, forKey: .password)
         try super.init(from: decoder)
     }
@@ -42,7 +39,6 @@ open class DPDUser: DPDObject {
     override open func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try? container.encode(username, forKey: .username)
-        try? container.encode(email, forKey: .email)
         try? super.encode(to: encoder)
     }
     
@@ -81,7 +77,6 @@ open class DPDUser: DPDObject {
         var jsonObject = [String: AnyObject]()
         jsonObject.updateValue(username as AnyObject, forKey: "username")
         jsonObject.updateValue(password as AnyObject, forKey: "password")
-        
         return jsonObject
     }
     
