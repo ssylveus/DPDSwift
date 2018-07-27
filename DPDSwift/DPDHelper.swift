@@ -49,6 +49,12 @@ public class DPDHelper: NSObject {
         defaults.synchronize()
     }
     
+    class func removeFromUserDefault(_ key: String) {
+        let defaults = UserDefaults.standard
+        defaults.removeObject(forKey: key)
+        defaults.synchronize()
+    }
+    
     class func retrieveFromUserDefault(_ key: String) -> AnyObject? {
         let defaults = UserDefaults.standard
         return defaults.object(forKey: key) as AnyObject?

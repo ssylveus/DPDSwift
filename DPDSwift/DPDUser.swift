@@ -194,6 +194,7 @@ open class DPDUser: DPDObject {
     }
     
     open class func logOut(_ rootUrl: String) {
+        DPDHelper.removeFromUserDefault(SharedUser.currentUserUserDefaultKey)
         if let token = DPDHelper.retrieveFromUserDefault(sessionTokenKey) as? String {
             var sessionDict = [String: AnyObject]()
             sessionDict["sessionToken"] = "sid=\(token)" as AnyObject?
