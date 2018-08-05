@@ -121,7 +121,7 @@ open class DPDUser: DPDObject {
                             DPDHelper.saveToUserDefault(sessionTokenKey, value: sessionToken as AnyObject)
                             self.getAccessToken(mapper, rootUrl: rootUrl, compBlock: { (response, responseHeader, error) in
                                 if let completionBlock = compBlock {
-                                    completionBlock(responseDict, responseHeader, nil)
+                                    completionBlock(response, responseHeader, nil)
                                 }
                             })
                         } else {
@@ -223,7 +223,9 @@ open class DPDUser: DPDObject {
                     if let responseDict = response as? [String: AnyObject] {
                         let userDict = responseDict["user"] as? [String: AnyObject];
                         let users = DPDObject.convertToDPDObject(mapper, response: [userDict!])
-                        self.saveUserObjToDefaults(users[0])
+                        if users.count > 0 {
+                            self.saveUserObjToDefaults(users[0])
+                        }
                         
                         if let accessToken = responseDict["accessToken"] as? String {
                             DPDCredentials.sharedCredentials.accessToken = accessToken

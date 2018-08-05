@@ -137,38 +137,40 @@ class DPDRequest: NSObject {
         operationQueue.addOperation(refreshOperation)
     }
     
-    class func processJsonResponse(_ data: Data?, response: URLResponse?, error: Error?, compBlock: CompletionBlock) {
-        if error != nil {
-            compBlock(response, nil, error)
-        } else {
-            if error == nil {
-                var jsonData: Any? = nil
-                
-                do {
-                    jsonData = try JSONSerialization.jsonObject(with: data!, options: .allowFragments)
-                } catch {
-                    
-                }
-                
-                if let httpResponse = response as? HTTPURLResponse {
-                    if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 || httpResponse.statusCode == 201 {
-                        compBlock(jsonData != nil ? jsonData! : [], httpResponse.allHeaderFields, error)
-                        return
-                    } else {
-                        var message = ""
-                        if let data = jsonData as? [String: AnyObject], let errorMessage = data["message"] as? String {
-                            message = errorMessage
-                        }
-                        
-                        let error = NSError(domain: message, code: httpResponse.statusCode, userInfo: nil)
-                        compBlock(jsonData, nil, error)
-                        return
-                    }
-                }
-                
+    class func processJsonResponse(_ data: Data?, response: URLResponse?, error: Error?, compBlock: @escaping CompletionBlock) {
+        DispatchQueue.main.async {
+            if error != nil {
+                compBlock(response, nil, error)
             } else {
-                compBlock(response!, nil, error)
-                return
+                if error == nil {
+                    var jsonData: Any? = nil
+                    
+                    do {
+                        jsonData = try JSONSerialization.jsonObject(with: data!, options: .allowFragments)
+                    } catch {
+                        
+                    }
+                    
+                    if let httpResponse = response as? HTTPURLResponse {
+                        if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 || httpResponse.statusCode == 201 {
+                            compBlock(jsonData != nil ? jsonData! : [], httpResponse.allHeaderFields, error)
+                            return
+                        } else {
+                            var message = ""
+                            if let data = jsonData as? [String: AnyObject], let errorMessage = data["message"] as? String {
+                                message = errorMessage
+                            }
+                            
+                            let error = NSError(domain: message, code: httpResponse.statusCode, userInfo: nil)
+                            compBlock(jsonData, nil, error)
+                            return
+                        }
+                    }
+                    
+                } else {
+                    compBlock(response!, nil, error)
+                    return
+                }
             }
         }
     }
@@ -206,7 +208,7 @@ class DPDRequest: NSObject {
             
             if let data = data {
                 do {
-                   jsonData = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                    jsonData = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
                 } catch {
                     compBlock (nil, nil, error)
                     return
@@ -243,3 +245,4 @@ class DPDRequest: NSObject {
     }
     
 }
+
