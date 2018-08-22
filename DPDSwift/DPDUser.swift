@@ -97,8 +97,7 @@ open class DPDUser: DPDObject {
                     if let responseDict = response as? [String: AnyObject] {
                         let users = DPDObject.convertToDPDObject(mapper, response: [responseDict])
                         self.saveUserObjToDefaults(users[0])
-                        self.login(mapper, rootUrl: rootUrl, username: username, password: password, compBlock: nil)
-                        compBlock(users, responseHeader, nil)
+                        self.login(mapper, rootUrl: rootUrl, username: username, password: password, compBlock: compBlock)
                     }
                 } else {
                     compBlock(response, responseHeader, error)
@@ -246,4 +245,3 @@ open class DPDUser: DPDObject {
         }
     }
 }
-
