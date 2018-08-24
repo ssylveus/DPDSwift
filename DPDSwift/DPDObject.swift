@@ -119,7 +119,12 @@ open class DPDObject: NSObject, Codable {
         }
     }
     
-    open func deleteObject(_ rootUrl: String, endPoint: String, objectId: String, param: [String: AnyObject]? = nil, compblock: @escaping CompletionBlock) {
+    open func deleteObject(_ rootUrl: String, endPoint: String, param: [String: AnyObject]? = nil, compblock: @escaping CompletionBlock) {
+        guard let objectId = self.objectId else {
+            compblock([], nil, NSError(domain: "id is required", code: 999, userInfo: nil))
+            return
+        }
+        
         let jsonString = toJSONString()
         
         DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint + "/\(objectId)", parameters: param, method: HTTPMethod.DELETE, jsonString: jsonString) { (response, responseHeader, error) -> Void in
@@ -133,6 +138,4 @@ open class DPDObject: NSObject, Codable {
         }
         
     }
-
-
 }
