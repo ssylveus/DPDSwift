@@ -8,14 +8,14 @@
 
 import UIKit
 
-enum HTTPMethod: String {
+public enum HTTPMethod: String {
     case GET = "GET"
     case POST = "POST"
     case DELETE = "DELETE"
     case PUT = "PUT"
 }
 
-enum ErrorCodes: Int {
+public enum ErrorCodes: Int {
     case unAuthorizedUser = 401
     case existingSession = 432
     case expiredAccessToken = 433
@@ -26,7 +26,7 @@ let accessTokenHeaderFieldKey = "accessToken"
 let sessionTokenKey = "SessionToken"
 
 
-class DPDRequest: NSObject {
+open class DPDRequest: NSObject {
     
     static let sharedHelper = DPDRequest()
     static var refreshTokenOperation: BackendOperation!
@@ -37,17 +37,19 @@ class DPDRequest: NSObject {
     }()
     
     var rootUrl = ""
+    static var lastTriggeredOperation: BackendOperation?
     
+    static var operations = [String: BackendOperation]()
     static let API_TIME_OUT_PERIOD      = 30.0
     
-    class func requestWithURL(_ rootURL:String,
-                              endPointURL: String?,
-                              parameters: [String: Any]?,
-                              method: HTTPMethod,
-                              jsonString: String?,
-                              cacheResponse: Bool? = false,
-                              requestHeader: [String: AnyObject]? = nil,
-                              andCompletionBlock compBlock: @escaping CompletionBlock) {
+    public class func requestWithURL(_ rootURL:String,
+                                     endPointURL: String?,
+                                     parameters: [String: Any]?,
+                                     method: HTTPMethod,
+                                     jsonString: String?,
+                                     cacheResponse: Bool? = false,
+                                     requestHeader: [String: AnyObject]? = nil,
+                                     andCompletionBlock compBlock: @escaping CompletionBlock) {
         
         sharedHelper.rootUrl = rootURL
         var urlString = rootURL + endPointURL!
@@ -100,12 +102,14 @@ class DPDRequest: NSObject {
     
     class func urlSessionFromRequest(_ request: URLRequest, compBlock: @escaping CompletionBlock) {
         var req = request
-        let refreshOperation = BackendOperation(session: URLSession.shared, request: request) { (data, response, error) -> Void in
+        let operation = BackendOperation(session: URLSession.shared, request: request) { (data, response, error) -> Void in
             
             if let httpResponse = response as? HTTPURLResponse {
                 switch httpResponse.statusCode {
                 case ErrorCodes.expiredAccessToken.rawValue:
                     if !isRefreshTokenRefreshing {
+                        print("refreshtokenurl: \(request.url!)")
+                        
                         refreshAccessToken((request.url?.absoluteString)!, compBlock: { (response, responseHeader, error) -> Void in
                             if(error == nil) {
                                 if let credential = DPDCredentials.sharedCredentials.accessToken {
@@ -118,27 +122,45 @@ class DPDRequest: NSObject {
                                 compBlock(response, nil, error)
                             }
                         })
+                    } else {
+                        print("Now what")
                     }
                     break
                     
                 default:
+                    if let url = request.url?.absoluteString {
+                        operations.removeValue(forKey: url)
+                    }
+                    isRefreshTokenRefreshing = false
                     processJsonResponse(data, response: response, error: error, compBlock: compBlock)
                     break;
                 }
             } else {
+                if let url = request.url?.absoluteString {
+                    operations.removeValue(forKey: url)
+                }
+                isRefreshTokenRefreshing = false
                 processJsonResponse(data, response: response, error: error, compBlock: compBlock)
             }
         }
         
         if refreshTokenOperation == nil || refreshTokenOperation.isFinished {
-            refreshTokenOperation = refreshOperation
+            refreshTokenOperation = operation
         }
         
-        operationQueue.addOperation(refreshOperation)
+        if let url = request.url?.absoluteString {
+            operations[url] = operation
+        }
+        
+        lastTriggeredOperation = operation
+        operationQueue.addOperation(operation)
+        
+        print("\n\n \(operations)")
     }
     
     class func processJsonResponse(_ data: Data?, response: URLResponse?, error: Error?, compBlock: @escaping CompletionBlock) {
         DispatchQueue.main.async {
+            print("\n\nPrinting Operations Count: \(operations.count)")
             if error != nil {
                 compBlock(response, nil, error)
             } else {
@@ -223,9 +245,16 @@ class DPDRequest: NSObject {
                                 DPDCredentials.sharedCredentials.accessToken = accessToken
                                 DPDCredentials.sharedCredentials.save()
                             }
-                            isRefreshTokenRefreshing = false
+                            
                             refreshTokenOperation = nil
                             compBlock(jsonData, nil, error)
+                            lastTriggeredOperation?.start()
+                            for (_, operation) in operations {
+                                print("Remake request with new access token: \(String(describing: operation.request?.url))")
+                                operation.start()
+                            }
+                            lastTriggeredOperation = nil
+                            operations.removeAll()
                         }
                     } else {
                         let error = NSError(domain: "Unknown Error", code: httpResponse.statusCode, userInfo: nil)
