@@ -12,7 +12,7 @@ s.requires_arc = true
   #}
   
 # 2
-s.version = "0.1.6"
+s.version = "0.1.7"
 
 # 3
 s.license = { :type => "MIT", :file => "LICENSE" }
@@ -28,7 +28,7 @@ s.author = { "Steeven Sylveus" => "steevensylveus@gmail.com" }
 s.homepage = "https://github.com/ssylveus/DPDSwift"
 
 # 6 - Replace this URL with your own Git URL from "Quick Setup"
-s.source = { :git => "https://github.com/ssylveus/DPDSwift.git",:branch => "master", :tag => '0.1.6'}
+s.source = { :git => "https://github.com/ssylveus/DPDSwift.git",:branch => "master", :tag => '0.1.7'}
 
 # 7
 s.framework = "UIKit"
