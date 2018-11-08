@@ -106,23 +106,44 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func login<T: DPDUser>(_ mapper: T.Type, rootUrl: String, username: String, password: String, compBlock: CompletionBlock?) {
+    open class func login<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, username: String, password: String, compBlock: CompletionBlock?) {
+        
+        guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
+            if let complitionBlock = compBlock {
+                complitionBlock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
+            }
+            
+            return
+        }
+        
         let jsonString = DPDHelper.toJsonString(userRequestObjt(username, password: password))
         
         var sessionDict = [String: AnyObject]()
         sessionDict["installationId"] = DPDCredentials.sharedCredentials.installationId as AnyObject?
         
-        DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.usersEndpoint + "/login", parameters: nil, method: HTTPMethod.POST, jsonString: jsonString, requestHeader : sessionDict) { (response, responseHeader, error) -> Void in
+        
+        DPDRequest.requestWithURL(baseUrl, endPointURL: SharedUser.usersEndpoint + "/login", parameters: nil, method: HTTPMethod.POST, jsonString: jsonString, requestHeader : sessionDict) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
                         if let sessionToken = responseDict["id"] as? String {
                             DPDHelper.saveToUserDefault(sessionTokenKey, value: sessionToken as AnyObject)
-                            self.getAccessToken(mapper, rootUrl: rootUrl, compBlock: { (response, responseHeader, error) in
+                            
+                            if DPDConstants.expiredAccessTokenErrorCode != nil && DPDConstants.accessTokenRefreshEndPoint != nil {
+                                self.getAccessToken(mapper, rootUrl: baseUrl, compBlock: { (response, responseHeader, error) in
+                                    if let completionBlock = compBlock {
+                                        completionBlock(response, responseHeader, nil)
+                                    }
+                                })
+                            } else {
+                                let user = DPDUser()
+                                user.objectId = responseDict["uid"] as? String
+                                self.saveUserObjToDefaults(user)
                                 if let completionBlock = compBlock {
-                                    completionBlock(response, responseHeader, nil)
+                                    completionBlock([user], responseHeader, nil)
                                 }
-                            })
+                            }
+                            
                         } else {
                             if let completionBlock = compBlock {
                                 completionBlock(response, responseHeader, NSError(domain: "Unknown Error", code: 400, userInfo: nil))
@@ -140,8 +161,14 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func updateUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String, user: DPDUser, compBlock: @escaping CompletionBlock) {
-        DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.usersEndpoint + "/\(user.objectId!)", parameters: nil, method: HTTPMethod.PUT, jsonString: user.toJSONString()) { (response, responseHeader, error) -> Void in
+    open class func updateUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, user: DPDUser, compBlock: @escaping CompletionBlock) {
+        
+        guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
+            compBlock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
+            return
+        }
+        
+        DPDRequest.requestWithURL(baseUrl, endPointURL: SharedUser.usersEndpoint + "/\(user.objectId!)", parameters: nil, method: HTTPMethod.PUT, jsonString: user.toJSONString()) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
@@ -156,8 +183,14 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func getUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String, userId: String, compBlock: @escaping CompletionBlock) {
-        DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.usersEndpoint + "/\(userId)", parameters: nil, method: HTTPMethod.GET, jsonString: nil) { (response, responseHeader, error) -> Void in
+    open class func getUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, userId: String, compBlock: @escaping CompletionBlock) {
+        
+        guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
+            compBlock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
+            return
+        }
+        
+        DPDRequest.requestWithURL(baseUrl, endPointURL: SharedUser.usersEndpoint + "/\(userId)", parameters: nil, method: HTTPMethod.GET, jsonString: nil) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
@@ -171,11 +204,17 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func refreshCurrentUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String, token: String, compBlock: @escaping CompletionBlock) {
+    open class func refreshCurrentUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, token: String, compBlock: @escaping CompletionBlock) {
+        
+        guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
+            compBlock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
+            return
+        }
+        
         var sessionDict = [String: AnyObject]()
         sessionDict["Cookie"] = "sid=\(token)" as AnyObject?
         
-        DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.usersEndpoint + "/me", parameters: nil, method: HTTPMethod.GET, jsonString: nil, requestHeader: sessionDict) { (response, responseHeader, error) -> Void in
+        DPDRequest.requestWithURL(baseUrl, endPointURL: SharedUser.usersEndpoint + "/me", parameters: nil, method: HTTPMethod.GET, jsonString: nil, requestHeader: sessionDict) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
@@ -192,7 +231,11 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func logOut(_ rootUrl: String) {
+    open class func logOut(_ rootUrl: String? = nil) {
+        guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
+            return
+        }
+        
         DPDHelper.removeFromUserDefault(SharedUser.currentUserUserDefaultKey)
         if let token = DPDHelper.retrieveFromUserDefault(sessionTokenKey) as? String {
             var sessionDict = [String: AnyObject]()
@@ -202,7 +245,7 @@ open class DPDUser: DPDObject {
                 return
             }
             
-            DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.sessionEndpoint + "/\(sessionId)", parameters: sessionDict, method: HTTPMethod.DELETE, jsonString: nil) { (response, responseHeader, error) in
+            DPDRequest.requestWithURL(baseUrl, endPointURL: SharedUser.sessionEndpoint + "/\(sessionId)", parameters: sessionDict, method: HTTPMethod.DELETE, jsonString: nil) { (response, responseHeader, error) in
                 
                 if error == nil {
                     print("Session Removed Successfuly");
@@ -215,8 +258,14 @@ open class DPDUser: DPDObject {
         DPDCredentials.sharedCredentials.clear()
     }
     
-    open class func getAccessToken<T: DPDUser>(_ mapper: T.Type, rootUrl: String, compBlock: @escaping CompletionBlock) {
-        DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.accessTokenEndpoint, parameters: nil, method: HTTPMethod.GET, jsonString: nil) { (response, responseHeader, error) -> Void in
+    open class func getAccessToken<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, compBlock: @escaping CompletionBlock) {
+        
+        guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
+            compBlock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
+            return
+        }
+        
+        DPDRequest.requestWithURL(baseUrl, endPointURL: DPDConstants.getAccessoTokenEndpoint, parameters: nil, method: HTTPMethod.GET, jsonString: nil) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {

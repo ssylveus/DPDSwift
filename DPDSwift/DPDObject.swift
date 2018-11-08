@@ -82,10 +82,16 @@ open class DPDObject: NSObject, Codable {
     //MARK: - CRUD OPERATIONS   
     
     open func createObject<T:
-        DPDObject>(_ mapper: T.Type, rootUrl: String, endPoint: String, compblock: @escaping CompletionBlock) {
+        DPDObject>(_ mapper: T.Type, rootUrl: String? = nil, endPoint: String, compblock: @escaping CompletionBlock) {
+        
+        guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
+            compblock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
+            return
+        }
+        
         let jsonString = toJSONString()
         
-        DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint, parameters: nil, method: HTTPMethod.POST, jsonString: jsonString) { (response, responseHeader, error) -> Void in
+        DPDRequest.requestWithURL(baseUrl, endPointURL: endPoint, parameters: nil, method: HTTPMethod.POST, jsonString: jsonString) { (response, responseHeader, error) -> Void in
             print(response ?? "")
             DispatchQueue.main.async(execute: {
                 if error == nil {
@@ -101,10 +107,15 @@ open class DPDObject: NSObject, Codable {
         }
     }
     
-    open func updateObject<T: DPDObject>(_ mapper: T.Type, rootUrl: String, endPoint: String, compblock: @escaping CompletionBlock) {
+    open func updateObject<T: DPDObject>(_ mapper: T.Type, rootUrl: String? = nil, endPoint: String, compblock: @escaping CompletionBlock) {
         let jsonString = toJSONString()
         
-        DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint + "/\(self.objectId!)", parameters: nil, method: HTTPMethod.PUT, jsonString: jsonString) { (response, responseHeader, error) -> Void in
+        guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
+            compblock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
+            return
+        }
+        
+        DPDRequest.requestWithURL(baseUrl, endPointURL: endPoint + "/\(self.objectId!)", parameters: nil, method: HTTPMethod.PUT, jsonString: jsonString) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: {
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
@@ -119,7 +130,13 @@ open class DPDObject: NSObject, Codable {
         }
     }
     
-    open func deleteObject(_ rootUrl: String, endPoint: String, param: [String: AnyObject]? = nil, compblock: @escaping CompletionBlock) {
+    open func deleteObject(_ rootUrl: String? = nil, endPoint: String, param: [String: AnyObject]? = nil, compblock: @escaping CompletionBlock) {
+        
+        guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
+            compblock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
+            return
+        }
+        
         guard let objectId = self.objectId else {
             compblock([], nil, NSError(domain: "id is required", code: 999, userInfo: nil))
             return
@@ -127,7 +144,7 @@ open class DPDObject: NSObject, Codable {
         
         let jsonString = toJSONString()
         
-        DPDRequest.requestWithURL(rootUrl, endPointURL: endPoint + "/\(objectId)", parameters: param, method: HTTPMethod.DELETE, jsonString: jsonString) { (response, responseHeader, error) -> Void in
+        DPDRequest.requestWithURL(baseUrl, endPointURL: endPoint + "/\(objectId)", parameters: param, method: HTTPMethod.DELETE, jsonString: jsonString) { (response, responseHeader, error) -> Void in
             
             if error == nil {
                 print(response ?? "")

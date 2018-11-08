@@ -15,12 +15,6 @@ public enum HTTPMethod: String {
     case PUT = "PUT"
 }
 
-public enum ErrorCodes: Int {
-    case unAuthorizedUser = 401
-    case existingSession = 432
-    case expiredAccessToken = 433
-}
-
 
 let accessTokenHeaderFieldKey = "accessToken"
 let sessionTokenKey = "SessionToken"
@@ -106,7 +100,8 @@ open class DPDRequest: NSObject {
             
             if let httpResponse = response as? HTTPURLResponse {
                 switch httpResponse.statusCode {
-                case ErrorCodes.expiredAccessToken.rawValue:
+                case DPDConstants.expiredAccessTokenErrorCode
+                    where DPDConstants.accessTokenRefreshEndPoint != nil:
                     if !isRefreshTokenRefreshing {
                         print("refreshtokenurl: \(request.url!)")
                         
