@@ -10,7 +10,7 @@ import UIKit
 
 open class DPDQuery: NSObject {
     
-    public typealias QueryCompletionBlock = (_ response: [Any], _ error: Error?) -> Void
+    public typealias QueryCompletionBlock = (_ response: [Any]?, _ error: Error?) -> Void
     
     public enum QueryCondition: Int {
         case greaterThan = 0
@@ -73,14 +73,26 @@ open class DPDQuery: NSObject {
         self.sortField = sortField
     }
     
-    open func findObject(_ rootUrl: String, endPoint: String, compblock: @escaping QueryCompletionBlock) {
+    open func findObject(_ rootUrl: String? = nil, endPoint: String, compblock: @escaping QueryCompletionBlock) {
+        
+        guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
+            compblock(nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
+            return
+        }
+        
         processQueryInfo()
-        makeApiRequest(rootUrl, endpointValue: endPoint, compblock: compblock)
+        makeApiRequest(baseUrl, endpointValue: endPoint, compblock: compblock)
     }
     
-    open func findMappableObject<T: DPDObject>(_ mapper: T.Type, rootUrl: String, endPoint: String, compblock: @escaping QueryCompletionBlock) {
+    open func findMappableObject<T: DPDObject>(_ mapper: T.Type, rootUrl: String? = nil, endPoint: String, compblock: @escaping QueryCompletionBlock) {
+        
+        guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
+            compblock(nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
+            return
+        }
+        
         processQueryInfo()
-        makeApiRequestForMappableObject(mapper, rootUrl: rootUrl, endpointValue: endPoint, compblock: compblock)
+        makeApiRequestForMappableObject(mapper, rootUrl: baseUrl, endpointValue: endPoint, compblock: compblock)
     }
     
     fileprivate func makeApiRequestForMappableObject<T: DPDObject>(_ mapper: T.Type, rootUrl: String, endpointValue: String, compblock: @escaping QueryCompletionBlock) {
@@ -97,7 +109,7 @@ open class DPDQuery: NSObject {
                 
                 compblock(mnObjects, nil)
             } else {
-                compblock([], error as NSError?)
+                compblock(nil, error as NSError?)
             }
             
         }
@@ -112,7 +124,7 @@ open class DPDQuery: NSObject {
                     compblock([response!], nil)
                 }
             } else {
-                compblock([], error)
+                compblock(nil, error)
             }
         }
     }

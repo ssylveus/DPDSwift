@@ -25,7 +25,7 @@ open class DPDUser: DPDObject {
         case password
     }
     
-    override init() {
+    public override init() {
         super.init()
     }
     
@@ -87,10 +87,16 @@ open class DPDUser: DPDObject {
         
     }
     
-    open class func createUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String, username: String, password: String, compBlock: @escaping CompletionBlock) {
+    open class func create<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, username: String, password: String, compBlock: @escaping CompletionBlock) {
+        
+        guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
+           compBlock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
+            return
+        }
+        
         let jsonString = DPDHelper.toJsonString(userRequestObjt(username, password: password))
         
-        DPDRequest.requestWithURL(rootUrl, endPointURL: SharedUser.usersEndpoint, parameters: nil, method: HTTPMethod.POST, jsonString: jsonString) { (response, responseHeader, error) -> Void in
+        DPDRequest.requestWithURL(baseUrl, endPointURL: SharedUser.usersEndpoint, parameters: nil, method: HTTPMethod.POST, jsonString: jsonString) { (response, responseHeader, error) -> Void in
             
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
@@ -157,19 +163,19 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func updateUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, user: DPDUser, compBlock: @escaping CompletionBlock) {
+    open func update<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, compBlock: @escaping CompletionBlock) {
         
         guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
             compBlock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
             return
         }
         
-        DPDRequest.requestWithURL(baseUrl, endPointURL: SharedUser.usersEndpoint + "/\(user.objectId!)", parameters: nil, method: HTTPMethod.PUT, jsonString: user.toJSONString()) { (response, responseHeader, error) -> Void in
+        DPDRequest.requestWithURL(baseUrl, endPointURL: DPDUser.SharedUser.usersEndpoint + "/\(self.objectId!)", parameters: nil, method: HTTPMethod.PUT, jsonString: self.toJSONString()) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
                         let users = DPDObject.convertToDPDObject(mapper, response: [responseDict])
-                        self.saveUserObjToDefaults(users[0])
+                        DPDUser.saveUserObjToDefaults(users[0])
                         compBlock(users, responseHeader, nil)
                     }
                 } else {

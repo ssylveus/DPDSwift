@@ -81,7 +81,7 @@ open class DPDObject: NSObject, Codable {
     
     //MARK: - CRUD OPERATIONS   
     
-    open func createObject<T:
+    open func create<T:
         DPDObject>(_ mapper: T.Type, rootUrl: String? = nil, endPoint: String, compblock: @escaping CompletionBlock) {
         
         guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
@@ -107,7 +107,7 @@ open class DPDObject: NSObject, Codable {
         }
     }
     
-    open func updateObject<T: DPDObject>(_ mapper: T.Type, rootUrl: String? = nil, endPoint: String, compblock: @escaping CompletionBlock) {
+    open func update<T: DPDObject>(_ mapper: T.Type, rootUrl: String? = nil, endPoint: String, compblock: @escaping CompletionBlock) {
         let jsonString = toJSONString()
         
         guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
@@ -130,7 +130,7 @@ open class DPDObject: NSObject, Codable {
         }
     }
     
-    open func deleteObject(_ rootUrl: String? = nil, endPoint: String, param: [String: AnyObject]? = nil, compblock: @escaping CompletionBlock) {
+    open func delete(_ rootUrl: String? = nil, endPoint: String, param: [String: AnyObject]? = nil, compblock: @escaping CompletionBlock) {
         
         guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
             compblock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
