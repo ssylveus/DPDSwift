@@ -136,11 +136,9 @@ open class DPDUser: DPDObject {
                                     }
                                 })
                             } else {
-                                let user = DPDUser()
-                                user.objectId = responseDict["uid"] as? String
-                                self.saveUserObjToDefaults(user)
-                                if let completionBlock = compBlock {
-                                    completionBlock([user], responseHeader, nil)
+                                if let completionBlock = compBlock, let userId = responseDict["uid"] as? String {
+                                    
+                                    getUser(mapper, rootUrl: baseUrl, userId: userId, compBlock: completionBlock)
                                 }
                             }
                             
@@ -194,8 +192,13 @@ open class DPDUser: DPDObject {
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
-                        let mnUsers = DPDObject.convertToDPDObject(mapper, response: [responseDict])
-                        compBlock(mnUsers, responseHeader, nil)
+                        let users = DPDObject.convertToDPDObject(mapper, response: [responseDict])
+                        if users.count > 0 {
+                            self.saveUserObjToDefaults(users[0])
+                        }
+                        compBlock(users, responseHeader, nil)
+                    } else {
+                        compBlock(nil, nil, NSError(domain: "No user found", code: -1, userInfo: nil))
                     }
                 } else {
                     compBlock(response, responseHeader, error)
