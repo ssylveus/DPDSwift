@@ -22,26 +22,39 @@ import DPDSwift
 import ObjectMapper
 
 class Store: DPDObject {
+    
     var name: String?
     var city: String?
     var state: String?
     var zip: String?
     
-    required init() {
+    override init() {
         super.init()
     }
     
-    required init?(_ map: Map) {
-        super.init(map)
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case city
+        case state
+        case zip
     }
     
-    override func mapping(map: Map) {
-        super.mapping(map)
-        
-        name <- map["name"]
-        city <- map["city"]
-        state <- map["state"]
-        zip <- map["zip"]
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.name = try? container.decode(String.self, forKey: .name)
+        self.city = try? container.decode(String.self, forKey: .city)
+        self.state = try? container.decode(String.self, forKey: .state)
+        self.zip = try? container.decode(String.self, forKey: .zip)
+        try super.init(from: decoder)
+    }
+    
+    override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try? container.encode(name, forKey: .name)
+        try? container.encode(city, forKey: .city)
+        try? container.encode(state, forKey: .state)
+        try? container.encode(zip, forKey: .zip)
+        try? super.encode(to: encoder)
     }
 }
 
@@ -59,27 +72,23 @@ class ViewController: UIViewController {
     }
     
     func createStore() {
+        let store = Store()
         store.name = "Best Buy"
         store.city = "Crystal Lake"
         store.state = "IL"
         store.zip = "60012"
         
-        store.createObject(Store(), rootUrl: rootUrl, endPoint: "stores") { (response, responseHeader, error) in
+        store.create(Store.self, endPoint: "store") { (response, headers, error) in
             if error == nil {
-                print("store created successfully")
-            } else {
-                print("failed to create store")
+                //do something with store
             }
         }
     }
     
-    func updateStoreCollection() {
-        store.name = "Apple"
-        store.updateObjectInBackground(Store(), rootUrl: rootUrl, endPoint: "stores") { (response, responseHeader, error) in
+    func updateStore(store: Store) {
+        store.update(Store.self, endPoint: "stores") { (response, headers, error) in
             if error == nil {
-                print("store updated successfully")
-            } else {
-                print("failed to update store")
+                //Store was updated
             }
         }
     }
@@ -87,25 +96,15 @@ class ViewController: UIViewController {
  
  
  //========= If you want the response to be mapped to specific DPDObject, you can call the findMappableObject() otherwise call the findObject() method ===============
- func getStores() {
-        let query = DPDQuery(queryCondition: DPDQuery.QueryCondition.None,
-                             ordertype: DPDQuery.OrderType.Ascending,
-                             limit: nil,
-                             skip: nil,
+func getStores() {
+        let query = DPDQuery(ordertype: .ascending,
+                             limit: nil, skip: nil,
                              queryField: nil,
                              queryFieldValue: nil,
                              sortField: nil)
-        
-        query.findMappableObject(Store(), rootUrl: rootUrl, endPoint: "stores") { (response, error) in
+        query.findMappableObject(Store.self, endPoint: "stores") { (response, error) in
             if error == nil {
-                if let stores = response as? [Store] {
-                    for store in stores {
-                        print(store.toJSON())
-                        print("\n\n")
-                    }
-                }
-            } else {
-                print(error)
+                
             }
         }
  }
@@ -118,67 +117,59 @@ class ViewController: UIViewController {
 ```swift
 import UIKit
 import DPDSwift
-import ObjectMapper
 
-class User: DPDUser {
+ class User: DPDUser {
+ 
+    var name: String?
     var firstName: String?
     var lastName: String?
-    var fullName: String?
-    var age: NSNumber?
+    var imageUrl: String?
     
-    required init() {
-        super.init()
+    private enum CodingKeys: String, CodingKey {
+        case name
+        case firstName
+        case lastName
+        case imageUrl
     }
     
-    required init?(_ map: Map) {
-        super.init(map)
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.name = try? container.decode(String.self, forKey: .name)
+        self.firstName = try? container.decode(String.self, forKey: .firstName)
+        self.lastName = try? container.decode(String.self, forKey: .lastName)
+        self.imageUrl = try? container.decode(String.self, forKey: .imageUrl)
+        try super.init(from: decoder)
     }
     
-    override func mapping(map: Map) {
-        super.mapping(map)
-        
-        firstName <- map["firstName"]
-        lastName <- map["lastName"]
-        fullName <- map["fullName"]
-        age <- map["age"]
+    override func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try? container.encode(name, forKey: .name)
+        try? container.encode(firstName, forKey: .firstName)
+        try? container.encode(lastName, forKey: .lastName)
+        try? container.encode(imageUrl, forKey: .imageUrl)
+        try? super.encode(to: encoder)
     }
 }
 
 //========================== Creating a User Collection ===============================
 func createUser() {
-        DPDUser.createUser(User(), rootUrl: rootUrl, username: "dpdswift@gmail.com", password: "dpdswift") { (response, responseHeader, error) in
+        DPDUser.create(User.self, username: "test@gmail.com", password: "test") { (response, headers, error) in
             if error == nil {
-                if let users = response as? [User] {
-                    print(users[0].toJSON())
-                }
-            } else {
-                print(error)
+                //do something with response
+            }
+        }
+ }
+    
+func updateUser(user: User) {
+        user.update(User.self) { (response, headers, error) in
+            if error == nil {
             }
         }
     }
-    
-func updateUser() {
-    if let user = DPDUser.currentUser(User()) {
-        user.firstName = "DPD"
-        user.lastName = "Swift"
-        user.fullName = user.firstName! + " " + user.lastName!
-        user.age = 28
-            
-        user.updateObjectInBackground(User(), rootUrl: rootUrl, endPoint: "users", compblock: { (response, responseHeader, error) in
-            if error == nil {
-                if let users = response as? [User] {
-                    print(users[0].toJSON())
-                }
-                } else {
-                    print(error)
-                }
-            })
-        }
-}
 ```
 # Installation
 DPDSwift can be added to your project using [CocoaPods 0.36 or later](http://blog.cocoapods.org/Pod-Authors-Guide-to-CocoaPods-Frameworks/) by adding the following line to your `Podfile`:
 
 ```ruby
-pod 'DPDSwift', :git => 'https://github.com/ssylveus/DPDSwift.git'
+pod 'DPDSwift', :git => 'https://github.com/ssylveus/DPDSwift.git', :branch => 'master'
 ```
