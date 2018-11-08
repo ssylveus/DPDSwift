@@ -89,7 +89,7 @@ class ViewController: UIViewController {
             }
         }
     }
- }
+ 
  
  
  //========= If you want the response to be mapped to specific DPDObject, you can call the findMappableObject() otherwise call the findObject() method ===============
@@ -150,19 +150,19 @@ import DPDSwift
 
 //========================== Creating a User Collection ===============================
 func createUser() {
-        DPDUser.create(User.self, username: "test@gmail.com", password: "test") { (response, headers, error) in
-            if error == nil {
-                //do something with response
-            }
+    DPDUser.create(User.self, username: "test@gmail.com", password: "test") { (response, headers, error) in
+        if error == nil {
+            //do something with response
         }
+    }
  }
     
 func updateUser(user: User) {
-        user.update(User.self) { (response, headers, error) in
-            if error == nil {
-            }
+    user.update(User.self) { (response, headers, error) in
+        if error == nil {
         }
     }
+ }
 ```
 # Installation
 DPDSwift can be added to your project using [CocoaPods 0.36 or later](http://blog.cocoapods.org/Pod-Authors-Guide-to-CocoaPods-Frameworks/) by adding the following line to your `Podfile`:
