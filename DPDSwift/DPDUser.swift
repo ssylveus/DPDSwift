@@ -130,11 +130,9 @@ open class DPDUser: DPDObject {
                             DPDHelper.saveToUserDefault(sessionTokenKey, value: sessionToken as AnyObject)
                             
                             if DPDConstants.expiredAccessTokenErrorCode != nil && DPDConstants.accessTokenRefreshEndPoint != nil {
-                                self.getAccessToken(mapper, rootUrl: baseUrl, compBlock: { (response, responseHeader, error) in
-                                    if let completionBlock = compBlock {
-                                        completionBlock(response, responseHeader, nil)
-                                    }
-                                })
+                                if let completionBlock = compBlock {
+                                    self.getAccessToken(mapper, rootUrl: baseUrl, compBlock: completionBlock)
+                                }
                             } else {
                                 if let completionBlock = compBlock, let userId = responseDict["uid"] as? String {
                                     

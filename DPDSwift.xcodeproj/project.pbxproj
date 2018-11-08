@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		240A9AB92194D86200C66115 /* DPDClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240A9AB72194D86200C66115 /* DPDClient.swift */; };
+		240A9ABA2194D86200C66115 /* DPDConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240A9AB82194D86200C66115 /* DPDConstants.swift */; };
 		64E73E318FEBEB3E311D6764 /* Pods_DPDSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BC9BE8E3CECA662298809A4E /* Pods_DPDSwift.framework */; };
 		75E9F6CD1DB417E3009DFBCE /* DPDSwift.h in Headers */ = {isa = PBXBuildFile; fileRef = 75E9F6CB1DB417E3009DFBCE /* DPDSwift.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		75E9F6D91DB4181B009DFBCE /* BackendOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E9F6D31DB4181B009DFBCE /* BackendOperation.swift */; };
@@ -19,6 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		240A9AB72194D86200C66115 /* DPDClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DPDClient.swift; sourceTree = "<group>"; };
+		240A9AB82194D86200C66115 /* DPDConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DPDConstants.swift; sourceTree = "<group>"; };
 		518D3161CA961F6363D5E2CA /* Pods-DPDSwift.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DPDSwift.release.xcconfig"; path = "Pods/Target Support Files/Pods-DPDSwift/Pods-DPDSwift.release.xcconfig"; sourceTree = "<group>"; };
 		75E9F6C81DB417E3009DFBCE /* DPDSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DPDSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		75E9F6CB1DB417E3009DFBCE /* DPDSwift.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DPDSwift.h; sourceTree = "<group>"; };
@@ -86,6 +90,8 @@
 			children = (
 				75E9F6CB1DB417E3009DFBCE /* DPDSwift.h */,
 				75E9F6D31DB4181B009DFBCE /* BackendOperation.swift */,
+				240A9AB72194D86200C66115 /* DPDClient.swift */,
+				240A9AB82194D86200C66115 /* DPDConstants.swift */,
 				75E9F6D41DB4181B009DFBCE /* DPDCredentials.swift */,
 				75E9F6D51DB4181B009DFBCE /* DPDHelper.swift */,
 				75E9F6D61DB4181B009DFBCE /* DPDObject.swift */,
@@ -216,10 +222,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				75E9F6DA1DB4181B009DFBCE /* DPDCredentials.swift in Sources */,
+				240A9AB92194D86200C66115 /* DPDClient.swift in Sources */,
 				75E9F6DC1DB4181B009DFBCE /* DPDObject.swift in Sources */,
 				75E9F6DE1DB4181B009DFBCE /* DPDRequest.swift in Sources */,
 				75E9F6DD1DB4181B009DFBCE /* DPDQuery.swift in Sources */,
 				75E9F6DB1DB4181B009DFBCE /* DPDHelper.swift in Sources */,
+				240A9ABA2194D86200C66115 /* DPDConstants.swift in Sources */,
 				75E9F6E01DB41827009DFBCE /* DPDUser.swift in Sources */,
 				75E9F6D91DB4181B009DFBCE /* BackendOperation.swift in Sources */,
 			);
