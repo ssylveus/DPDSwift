@@ -31,7 +31,6 @@ open class DPDRequest: NSObject {
     }()
     
     var rootUrl = ""
-    static var lastTriggeredOperation: BackendOperation?
     
     static var operations = [String: BackendOperation]()
     static let API_TIME_OUT_PERIOD      = 30.0
@@ -110,9 +109,6 @@ open class DPDRequest: NSObject {
                                 if let credential = DPDCredentials.sharedCredentials.accessToken {
                                     req.setValue(credential, forHTTPHeaderField: accessTokenHeaderFieldKey)
                                 }
-//                                urlSessionFromRequest(request, compBlock: { (response, responseHeader, error) -> Void in
-//                                    urlSessionFromRequest(request, compBlock: compBlock)
-//                                })
                             } else {
                                 compBlock(response, nil, error)
                             }
@@ -147,7 +143,6 @@ open class DPDRequest: NSObject {
             operations[url] = operation
         }
         
-        //lastTriggeredOperation = operation
         operationQueue.addOperation(operation)
         
         print("\n\n \(operations)")
@@ -243,12 +238,10 @@ open class DPDRequest: NSObject {
                             
                             refreshTokenOperation = nil
                             compBlock(jsonData, nil, error)
-                            //lastTriggeredOperation?.start()
                             for (_, operation) in operations {
                                 print("Remake request with new access token: \(String(describing: operation.request?.url))")
                                 operation.start()
                             }
-                            //lastTriggeredOperation = nil
                             operations.removeAll()
                         }
                     } else {
