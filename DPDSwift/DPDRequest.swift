@@ -110,9 +110,9 @@ open class DPDRequest: NSObject {
                                 if let credential = DPDCredentials.sharedCredentials.accessToken {
                                     req.setValue(credential, forHTTPHeaderField: accessTokenHeaderFieldKey)
                                 }
-                                urlSessionFromRequest(request, compBlock: { (response, responseHeader, error) -> Void in
-                                    urlSessionFromRequest(request, compBlock: compBlock)
-                                })
+//                                urlSessionFromRequest(request, compBlock: { (response, responseHeader, error) -> Void in
+//                                    urlSessionFromRequest(request, compBlock: compBlock)
+//                                })
                             } else {
                                 compBlock(response, nil, error)
                             }
@@ -147,7 +147,7 @@ open class DPDRequest: NSObject {
             operations[url] = operation
         }
         
-        lastTriggeredOperation = operation
+        //lastTriggeredOperation = operation
         operationQueue.addOperation(operation)
         
         print("\n\n \(operations)")
@@ -196,7 +196,7 @@ open class DPDRequest: NSObject {
         print("***************** Refreshing Access Token ********************")
         isRefreshTokenRefreshing = true
         
-        var urlString = sharedHelper.rootUrl + "refreshaccesstoken";
+        var urlString = sharedHelper.rootUrl + DPDConstants.accessTokenRefreshEndPoint!;
         print(urlString);
         urlString = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
         let url = (URL(string: urlString))
@@ -243,12 +243,12 @@ open class DPDRequest: NSObject {
                             
                             refreshTokenOperation = nil
                             compBlock(jsonData, nil, error)
-                            lastTriggeredOperation?.start()
+                            //lastTriggeredOperation?.start()
                             for (_, operation) in operations {
                                 print("Remake request with new access token: \(String(describing: operation.request?.url))")
                                 operation.start()
                             }
-                            lastTriggeredOperation = nil
+                            //lastTriggeredOperation = nil
                             operations.removeAll()
                         }
                     } else {
