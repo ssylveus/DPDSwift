@@ -10,9 +10,6 @@ DPDSwift is an iOS library, that helps facilitate the use of Deployd for iOS Dev
 - DPDRequest
 
 #The Basics
-- DPDSwift Uses ObjectMapper Library for object mapping. More information can be found here.  
--https://github.com/Hearst-DD/ObjectMapper
-
 - Assuming we have a collection on Deployd called Stores.  We can access the store collection as follow.
 
 - Using DPDObject
