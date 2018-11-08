@@ -20,7 +20,7 @@ DPDSwift is an iOS library, that helps facilitate the use of Deployd for iOS Dev
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        DPDClient.initialize(rootUrl: "https://usicians.com/",
+        DPDClient.initialize(rootUrl: "https://dpdswift.com/",
                              accessTokenRefreshEndPoint: "refreshaccesstoken",
                              expiredAccessTokenErrorCode: 433,
                              getAccessoTokenEndpoint: "accesstoken")
