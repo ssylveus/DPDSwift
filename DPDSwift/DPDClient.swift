@@ -13,7 +13,7 @@ public class DPDClient: DPDObject {
         super.init()
     }
     
-    required init(from decoder: Decoder) throws {
+    public required init(from decoder: Decoder) throws {
         try super.init(from: decoder)
     }
     
