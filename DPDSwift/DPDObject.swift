@@ -15,7 +15,7 @@ extension Decodable {
     }
 }
 
-public extension Encodable {
+extension Encodable {
     func encode() throws -> Data {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
@@ -64,6 +64,14 @@ open class DPDObject: NSObject, Codable {
         self.objectId = try? container.decode(String.self, forKey: .objectId)
         self.createdAt = try? container.decode(Double.self, forKey: .createdAt)
         self.updatedAt = try? container.decode(Double.self, forKey: .updatedAt)
+    }
+    
+    open func toString() -> String? {
+        return self.toJSONString()
+    }
+    
+    open func toJson() -> Any? {
+        return self.toJSON()
     }
     
     open class func convertToDPDObject<T: DPDObject>(_ mapper: T.Type, response: [[String: Any]]) -> [T] {
