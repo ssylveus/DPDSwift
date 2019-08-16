@@ -103,8 +103,8 @@ open class DPDQuery: NSObject {
                 if let responseDict = response as? [String: Any] {
                     mnObjects = DPDObject.convertToDPDObject(mapper, response: [responseDict])
                     
-                } else {
-                    mnObjects = DPDObject.convertToDPDObject(mapper, response: response as! [[String: Any]])
+                } else if let responseArray = response as? [[String: Any]] {
+                    mnObjects = DPDObject.convertToDPDObject(mapper, response: responseArray)
                 }
                 
                 compblock(mnObjects, nil)
@@ -120,8 +120,10 @@ open class DPDQuery: NSObject {
             if error == nil {
                 if let responseDict = response as? [String: Any] {
                     compblock([responseDict as Any], nil)
+                } else if let responseArray = response as? [[String: Any]] {
+                    compblock(responseArray, nil)
                 } else {
-                    compblock(response! as? [Any], nil)
+                    compblock(nil, error)
                 }
             } else {
                 compblock(nil, error)
