@@ -121,7 +121,7 @@ open class DPDQuery: NSObject {
                 if let responseDict = response as? [String: Any] {
                     compblock([responseDict as Any], nil)
                 } else {
-                    compblock([response!], nil)
+                    compblock(response! as? [Any], nil)
                 }
             } else {
                 compblock(nil, error)
@@ -130,7 +130,7 @@ open class DPDQuery: NSObject {
     }
     
     fileprivate func executeRequest(_ rootUrl: String,  endpointValue: String, compblock: @escaping CompletionBlock) {
-        DPDRequest.requestWithURL(rootUrl, endPointURL: endpointValue, parameters: queryParam, method: HTTPMethod.GET, jsonString: nil) { (response, responseHeader, error) in
+        DPDRequest.requestWithURL(rootUrl, endPointURL: endpointValue, parameters: queryParam?.count ?? 0 > 0 ? queryParam : nil, method: HTTPMethod.GET, jsonString: nil) { (response, responseHeader, error) in
             
             DispatchQueue.main.async(execute: {
                 compblock(response, responseHeader, error)
