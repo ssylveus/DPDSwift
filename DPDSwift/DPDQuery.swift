@@ -145,6 +145,8 @@ open class DPDQuery: NSObject {
         
         if queryField != nil && queryCondition != .none {
             processQuerycondition()
+        } else if queryCondition == .generic {
+            processQuerycondition()
         }
         
         if let _ = sortField {
