@@ -58,12 +58,12 @@ open class DPDQuery: NSObject {
     }
     
     public init(queryCondition: QueryCondition = .none,
-                ordertype: OrderType,
-                limit: Int?,
-                skip: Int?,
-                queryField: String?,
-                queryFieldValue: Any?,
-                sortField: String?) {
+                ordertype: OrderType = .ascending,
+                limit: Int? = nil,
+                skip: Int? = nil,
+                queryField: String? = nil,
+                queryFieldValue: Any? = nil,
+                sortField: String? = nil) {
         self.queryCondition = queryCondition
         self.sortingOrder = ordertype
         self.limit = limit
