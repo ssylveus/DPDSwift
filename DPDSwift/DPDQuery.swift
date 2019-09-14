@@ -73,6 +73,41 @@ open class DPDQuery: NSObject {
         self.sortField = sortField
     }
     
+    open func queryCondition(condition: QueryCondition) -> DPDQuery {
+        self.queryCondition = condition
+        return self
+    }
+    
+    open func sortingOrder(order: OrderType) -> DPDQuery {
+        self.sortingOrder = order
+        return self
+    }
+    
+    open func limit(limit: Int) -> DPDQuery {
+        self.limit = limit
+        return self
+    }
+    
+    open func skip(skip: Int) -> DPDQuery {
+        self.skip = skip
+        return self
+    }
+    
+    open func queryField(field: String) -> DPDQuery {
+        self.queryField = field
+        return self
+    }
+    
+    open func queryFieldValue(fieldValue: String) -> DPDQuery {
+        self.queryFieldValue = fieldValue
+        return self
+    }
+    
+    open func sortField(sortField: String) -> DPDQuery {
+        self.sortField = sortField
+        return self
+    }
+    
     open func findObject(_ rootUrl: String? = nil, endPoint: String, compblock: @escaping QueryCompletionBlock) {
         
         guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
