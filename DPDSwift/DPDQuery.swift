@@ -98,7 +98,7 @@ open class DPDQuery: NSObject {
         return self
     }
     
-    open func queryFieldValue(fieldValue: String) -> DPDQuery {
+    open func queryFieldValue(fieldValue: Any) -> DPDQuery {
         self.queryFieldValue = fieldValue
         return self
     }
