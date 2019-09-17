@@ -83,6 +83,7 @@ open class DPDObject: NSObject, Codable {
             
             return try [T].decode(data: data)
         } catch  {
+            print("Decoding Error: \(error)")
             return []
         }
     }

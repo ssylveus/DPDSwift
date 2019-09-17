@@ -160,11 +160,12 @@ open class DPDRequest: NSObject {
                     do {
                         jsonData = try JSONSerialization.jsonObject(with: data!, options: .allowFragments)
                     } catch {
-                        
+                        print("Serialization Error: \(error)")
                     }
                     
                     if let httpResponse = response as? HTTPURLResponse {
-                        if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 || httpResponse.statusCode == 201 {
+                        if httpResponse.statusCode == 200 || httpResponse.statusCode == 201 {
+                            print("**Response***\n\(jsonData != nil ? jsonData! : [])")
                             compBlock(jsonData != nil ? jsonData! : [], httpResponse.allHeaderFields, error)
                             return
                         } else {
