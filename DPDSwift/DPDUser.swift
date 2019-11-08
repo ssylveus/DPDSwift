@@ -142,7 +142,7 @@ open class DPDUser: DPDObject {
                             } else {
                                 if let completionBlock = compBlock, let userId = responseDict["uid"] as? String {
                                     
-                                    getUser(mapper, rootUrl: baseUrl, userId: userId, compBlock: completionBlock)
+                                    getCurrentUser(mapper, rootUrl: baseUrl, userId: userId, compBlock: completionBlock)
                                 }
                             }
                             
@@ -185,14 +185,14 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func getUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, userId: String, compBlock: @escaping CompletionBlock) {
+    open class func getCurrentUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, userId: String, compBlock: @escaping CompletionBlock) {
         
         guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
             compBlock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
             return
         }
         
-        DPDRequest.requestWithURL(baseUrl, endPointURL: SharedUser.usersEndpoint + "/\(userId)", parameters: nil, method: HTTPMethod.GET, jsonString: nil) { (response, responseHeader, error) -> Void in
+        DPDRequest.requestWithURL(baseUrl, endPointURL: SharedUser.usersEndpoint + "/me", parameters: nil, method: HTTPMethod.GET, jsonString: nil) { (response, responseHeader, error) -> Void in
             DispatchQueue.main.async(execute: { () -> Void in
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
@@ -301,3 +301,4 @@ open class DPDUser: DPDObject {
         }
     }
 }
+
