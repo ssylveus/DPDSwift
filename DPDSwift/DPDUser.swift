@@ -140,9 +140,9 @@ open class DPDUser: DPDObject {
                                     self.getAccessToken(mapper, rootUrl: baseUrl, compBlock: completionBlock)
                                 }
                             } else {
-                                if let completionBlock = compBlock, let userId = responseDict["uid"] as? String {
+                                if let completionBlock = compBlock {
                                     
-                                    getCurrentUser(mapper, rootUrl: baseUrl, userId: userId, compBlock: completionBlock)
+                                    getCurrentUser(mapper, rootUrl: baseUrl, compBlock: completionBlock)
                                 }
                             }
                             
@@ -185,7 +185,7 @@ open class DPDUser: DPDObject {
         }
     }
     
-    open class func getCurrentUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, userId: String, compBlock: @escaping CompletionBlock) {
+    open class func getCurrentUser<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, compBlock: @escaping CompletionBlock) {
         
         guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
             compBlock(nil, nil, NSError(domain: "Invalid is required", code: -1, userInfo: nil))
@@ -301,4 +301,5 @@ open class DPDUser: DPDObject {
         }
     }
 }
+
 
