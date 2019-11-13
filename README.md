@@ -3,13 +3,13 @@
 Deployd is a tool that makes building APIs simple by providing important ready-made functionality out of the box that meet the demands of complex applications (http://deployd.com).
 DPDSwift is an iOS library, that helps facilitate the use of Deployd for iOS Development.
 
-#Features
+#Features#
 - DPDObject
 - DPDUser (Login, Logout)
 - DPDQuery
 - DPDRequest
 
-#The Basics
+#The Basics#
 - Assuming we have a collection on Deployd called Stores.  We can access the store collection as follow.
 
 # DPDClient
