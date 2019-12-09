@@ -39,6 +39,11 @@ open class DPDUser: DPDObject {
     override open func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try? container.encode(username, forKey: .username)
+        
+        if self.password != nil {
+            try? container.encode(password, forKey: .password)
+        }
+        
         try? super.encode(to: encoder)
     }
     
@@ -301,5 +306,6 @@ open class DPDUser: DPDObject {
         }
     }
 }
+
 
 
