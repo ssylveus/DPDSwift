@@ -253,7 +253,24 @@ open class DPDUser: DPDObject {
             var sessionDict = [String: AnyObject]()
             sessionDict["sessionToken"] = "sid=\(token)" as AnyObject?
             
+            DPDCredentials.sharedCredentials.clear()
+            DPDHelper.removeFromUserDefault(sessionTokenKey)
+            
             guard let sessionId = DPDCredentials.sharedCredentials.sessionId , sessionId.count > 0  else {
+                
+                let cookieDict = ["Cookie": "sid=\(token)"]
+                
+                if let jsonData = try? JSONSerialization.data(withJSONObject: cookieDict, options: []) {
+                    
+                    let jsonString = String(data: jsonData, encoding: .utf8)
+                    DPDRequest.requestWithURL(baseUrl, endPointURL: "logout", parameters: nil, method: .POST, jsonString: jsonString) { (response, responseHeader, error) in
+                        if error == nil {
+                            print("Session Removed Successfuly");
+                        } else {
+                            print("Failed to remove sesion");
+                        }
+                    }
+                }
                 return
             }
             
@@ -267,7 +284,7 @@ open class DPDUser: DPDObject {
             }
         }
         
-        DPDCredentials.sharedCredentials.clear()
+        
     }
     
     open class func getAccessToken<T: DPDUser>(_ mapper: T.Type, rootUrl: String? = nil, compBlock: @escaping CompletionBlock) {
@@ -306,6 +323,7 @@ open class DPDUser: DPDObject {
         }
     }
 }
+
 
 
 

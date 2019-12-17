@@ -2,8 +2,7 @@
 //  DPDObject.swift
 //  DPDSwift
 //
-//  Created by Steeven Sylveus (Contractor) on 10/15/16.
-//  Copyright © 2016 Steeven Sylveus. All rights reserved.
+//Created by Sylveus, Steeven on 11/8/18.
 //
 
 import UIKit

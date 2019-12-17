@@ -2,7 +2,7 @@
 //  DPDSwift.h
 //  DPDSwift
 //
-//  Created by Steeven Sylveus (Contractor) on 10/16/16.
+//  Created by Steeven Sylveus on 10/16/16.
 //  Copyright © 2016 Steeven Sylveus. All rights reserved.
 //
 
