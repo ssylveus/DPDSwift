@@ -16,7 +16,7 @@ public class DPDClient: DPDObject {
             return true
         }
         
-        return true
+        return false
     }
     
     private override init() {
