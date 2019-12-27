@@ -71,8 +71,8 @@ open class DPDRequest: NSObject {
             request?.setValue(credential, forHTTPHeaderField: accessTokenHeaderFieldKey)
         }
         
-        if let token = DPDHelper.retrieveFromUserDefault(sessionTokenKey) as? String {
-            request!.setValue("sid=\(token)", forHTTPHeaderField: "cookie")
+        if let token = DPDHelper.getSessionId() {
+            request!.setValue(token, forHTTPHeaderField: "cookie")
         }
         
         if let header = requestHeader {
@@ -204,8 +204,8 @@ open class DPDRequest: NSObject {
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
         
-        if let token = DPDHelper.retrieveFromUserDefault(sessionTokenKey) as? String {
-            request.setValue("sid=\(token)", forHTTPHeaderField: "cookie")
+        if let token = DPDHelper.getSessionId() {
+            request.setValue(token, forHTTPHeaderField: "cookie")
         }
         
         let refreshOperation = BackendOperation(session: URLSession.shared, request: request) { (data, response, error) -> Void in

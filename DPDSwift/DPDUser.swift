@@ -48,7 +48,8 @@ open class DPDUser: DPDObject {
     }
     
     open class func currentUser<T: DPDUser>(_ mapper: T.Type) -> T? {
-        if let userArray = DPDHelper.readArrayWithCustomObjFromUserDefault(SharedUser.currentUserUserDefaultKey) {
+        
+        if let userArray = DPDKeyChain.getArray(SharedUser.currentUserUserDefaultKey) {
             
             guard let data = try? JSONSerialization.data(withJSONObject: userArray, options: []) else {
                 return nil
@@ -87,7 +88,7 @@ open class DPDUser: DPDObject {
     
     open class func saveUserObjToDefaults<T: DPDUser>(_ user: T) {
         if let userDict = user.toJSON() as? [String: Any] {
-            DPDHelper.writeArrayWithCustomObjToUserDefaults(SharedUser.currentUserUserDefaultKey, array: [userDict])
+            DPDKeyChain.saveArray(SharedUser.currentUserUserDefaultKey, array: [userDict])
         }
         
     }
@@ -138,7 +139,7 @@ open class DPDUser: DPDObject {
                 if error == nil {
                     if let responseDict = response as? [String: AnyObject] {
                         if let sessionToken = responseDict["id"] as? String {
-                            DPDHelper.saveToUserDefault(sessionTokenKey, value: sessionToken as AnyObject)
+                            DPDKeyChain.save(sessionTokenKey, value: sessionToken)
                             
                             if DPDConstants.expiredAccessTokenErrorCode != nil && DPDConstants.accessTokenRefreshEndPoint != nil {
                                 if let completionBlock = compBlock {
@@ -235,7 +236,7 @@ open class DPDUser: DPDObject {
                         compBlock(users, responseHeader, nil)
                     }
                 } else {
-                    UserDefaults.standard.removeObject(forKey: SharedUser.currentUserUserDefaultKey)
+                    DPDKeyChain.delete(SharedUser.currentUserUserDefaultKey)
                 }
                 
                 compBlock(response, responseHeader, error)
@@ -247,14 +248,14 @@ open class DPDUser: DPDObject {
         guard let baseUrl = rootUrl ?? DPDConstants.rootUrl else {
             return
         }
+        DPDKeyChain.delete(SharedUser.currentUserUserDefaultKey)
         
-        DPDHelper.removeFromUserDefault(SharedUser.currentUserUserDefaultKey)
-        if let token = DPDHelper.retrieveFromUserDefault(sessionTokenKey) as? String {
+        if let token = DPDKeyChain.getString(sessionTokenKey) {
             var sessionDict = [String: AnyObject]()
             sessionDict["sessionToken"] = "sid=\(token)" as AnyObject?
             
             DPDCredentials.sharedCredentials.clear()
-            DPDHelper.removeFromUserDefault(sessionTokenKey)
+            DPDKeyChain.delete(sessionTokenKey)
             
             guard let sessionId = DPDCredentials.sharedCredentials.sessionId , sessionId.count > 0  else {
                 

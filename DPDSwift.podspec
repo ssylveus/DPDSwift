@@ -32,6 +32,7 @@ s.source = { :git => "https://github.com/ssylveus/DPDSwift.git",:branch => "mast
 
 # 7
 s.framework = "UIKit"
+s.dependency 'KeychainSwift', '~> 18.0'
 
 # 8
 s.source_files = "DPDSwift", "DPDSwift/**/*.{swift}"

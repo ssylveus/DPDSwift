@@ -46,19 +46,18 @@ open class DPDCredentials: DPDObject {
     func save() {
         do {
            let data = try encode()
-            UserDefaults.standard.set(data, forKey: DPDCredentials.appCredentialKey)
-            UserDefaults.standard.synchronize()
+            DPDKeyChain.save(DPDCredentials.appCredentialKey, value: data)
         } catch  {
             print("Unable to save credentials")
         }
     }
     
     func clear() {
-        UserDefaults.standard.removeObject(forKey: DPDCredentials.appCredentialKey)
+        DPDKeyChain.delete(DPDCredentials.appCredentialKey)
     }
     
     class func loadSaved() -> DPDCredentials {
-        if let data = UserDefaults.standard.object(forKey: DPDCredentials.appCredentialKey) as? Data {
+        if let data = DPDKeyChain.getData(DPDCredentials.appCredentialKey) {
             do {
                 let credentials = try JSONDecoder().decode(DPDCredentials.self, from: data)
                 return credentials

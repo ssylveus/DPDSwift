@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import KeychainSwift
 
 public typealias CompletionBlock =  (_ response: Any?, _ responseHeader: [AnyHashable: Any]?, _ error: Error?) -> Void
 
@@ -25,46 +26,11 @@ public class DPDHelper: NSObject {
         return jsonString
     }
     
-    class func writeArrayWithCustomObjToUserDefaults(_ key: String, array: [[String: Any]]) {
-        let defaults = UserDefaults.standard
-        let data = NSKeyedArchiver.archivedData(withRootObject: array)
-        defaults.set(data, forKey: key)
-        defaults.synchronize()
-    }
-    
-    class func readArrayWithCustomObjFromUserDefault(_ key: String) -> [[String: AnyObject]]? {
-        let defaults = UserDefaults.standard
-        if let data = defaults.object(forKey: key) as? Data {
-            if let dataArray = NSKeyedUnarchiver.unarchiveObject(with: data) as? [[String: AnyObject]] {
-                return dataArray
-            }
-        }
-        return nil
-    }
-    
-    class func saveToUserDefault(_ key: String, value: AnyObject) {
-        let defaults = UserDefaults.standard
-        defaults.set(value, forKey: key)
-        defaults.synchronize()
-    }
-    
-    class func removeFromUserDefault(_ key: String) {
-        let defaults = UserDefaults.standard
-        defaults.removeObject(forKey: key)
-        defaults.synchronize()
-    }
-    
-    class func retrieveFromUserDefault(_ key: String) -> AnyObject? {
-        let defaults = UserDefaults.standard
-        return defaults.object(forKey: key) as AnyObject?
-    }
-    
-    open class func getSessionId() -> String {
-        if let token = DPDHelper.retrieveFromUserDefault(sessionTokenKey) as? String {
+    open class func getSessionId() -> String? {
+        if let token = DPDKeyChain.getString(sessionTokenKey) {
             return "sid=\(token)"
         }
-        
-        return ""
+        return nil
     }
     
     open class func getAccessToken() -> String {

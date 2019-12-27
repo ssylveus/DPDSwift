@@ -18,6 +18,7 @@
 		75E9F6DD1DB4181B009DFBCE /* DPDQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E9F6D71DB4181B009DFBCE /* DPDQuery.swift */; };
 		75E9F6DE1DB4181B009DFBCE /* DPDRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E9F6D81DB4181B009DFBCE /* DPDRequest.swift */; };
 		75E9F6E01DB41827009DFBCE /* DPDUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E9F6DF1DB41827009DFBCE /* DPDUser.swift */; };
+		7920FEEC23B57E5D00DA734F /* DPDKeyChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7920FEEB23B57E5D00DA734F /* DPDKeyChain.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		75E9F6D71DB4181B009DFBCE /* DPDQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DPDQuery.swift; sourceTree = "<group>"; };
 		75E9F6D81DB4181B009DFBCE /* DPDRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DPDRequest.swift; sourceTree = "<group>"; };
 		75E9F6DF1DB41827009DFBCE /* DPDUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DPDUser.swift; sourceTree = "<group>"; };
+		7920FEEB23B57E5D00DA734F /* DPDKeyChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DPDKeyChain.swift; sourceTree = "<group>"; };
 		BC9BE8E3CECA662298809A4E /* Pods_DPDSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DPDSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F28E06995468D1A1177B7816 /* Pods-DPDSwift.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DPDSwift.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DPDSwift/Pods-DPDSwift.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -94,6 +96,7 @@
 				240A9AB82194D86200C66115 /* DPDConstants.swift */,
 				75E9F6D41DB4181B009DFBCE /* DPDCredentials.swift */,
 				75E9F6D51DB4181B009DFBCE /* DPDHelper.swift */,
+				7920FEEB23B57E5D00DA734F /* DPDKeyChain.swift */,
 				75E9F6D61DB4181B009DFBCE /* DPDObject.swift */,
 				75E9F6D71DB4181B009DFBCE /* DPDQuery.swift */,
 				75E9F6D81DB4181B009DFBCE /* DPDRequest.swift */,
@@ -228,6 +231,7 @@
 				75E9F6DE1DB4181B009DFBCE /* DPDRequest.swift in Sources */,
 				75E9F6DD1DB4181B009DFBCE /* DPDQuery.swift in Sources */,
 				75E9F6DB1DB4181B009DFBCE /* DPDHelper.swift in Sources */,
+				7920FEEC23B57E5D00DA734F /* DPDKeyChain.swift in Sources */,
 				240A9ABA2194D86200C66115 /* DPDConstants.swift in Sources */,
 				75E9F6E01DB41827009DFBCE /* DPDUser.swift in Sources */,
 				75E9F6D91DB4181B009DFBCE /* BackendOperation.swift in Sources */,
