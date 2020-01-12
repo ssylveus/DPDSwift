@@ -72,7 +72,7 @@ open class DPDRequest: NSObject {
         }
         
         if let token = DPDHelper.getSessionId() {
-            request!.setValue(token, forHTTPHeaderField: "cookie")
+            request!.setValue(token, forHTTPHeaderField: "Cookie")
         }
         
         if let header = requestHeader {
@@ -205,7 +205,7 @@ open class DPDRequest: NSObject {
         
         
         if let token = DPDHelper.getSessionId() {
-            request.setValue(token, forHTTPHeaderField: "cookie")
+            request.setValue(token, forHTTPHeaderField: "Cookie")
         }
         
         let refreshOperation = BackendOperation(session: URLSession.shared, request: request) { (data, response, error) -> Void in
