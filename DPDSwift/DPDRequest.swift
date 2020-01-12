@@ -112,8 +112,6 @@ open class DPDRequest: NSObject {
                                 compBlock(response, nil, error)
                             }
                         })
-                    } else {
-                        print("Now what")
                     }
                     break
                     
