@@ -266,9 +266,9 @@ open class DPDUser: DPDObject {
                     let jsonString = String(data: jsonData, encoding: .utf8)
                     DPDRequest.requestWithURL(baseUrl, endPointURL: "logout", parameters: nil, method: .POST, jsonString: jsonString) { (response, responseHeader, error) in
                         if error == nil {
-                            print("Session Removed Successfuly");
+                            print("Logged out Successfuly");
                         } else {
-                            print("Failed to remove sesion");
+                            print("Failed to  log out");
                         }
                     }
                 }
